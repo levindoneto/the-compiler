@@ -1,8 +1,10 @@
 %{
 #include "tokens.h"
-#include "hash.c"
 
 int lineNumber = 1;
+
+#include "hash.c"
+
 %}
 
 %x Comm
@@ -12,7 +14,7 @@ BAS [a-zA-Z_]
 
 %%
 
-[ \t\r]                 { }
+[ \t\r]                 		
 
 "byte"					{return KW_BYTE;}
 "int"					{return KW_INT;}
@@ -30,21 +32,20 @@ BAS [a-zA-Z_]
 "return"				{return KW_RETURN;}
 "break"					{return KW_BREAK;}
 
-BAS[a-zA-Z_0-9]*		{hashInsert(yytext,TK_IDENTIFIER); return TK_IDENTIFIER;}
-
-NMR+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
-(NMR+\.NMR*|NMR*\.NMR+)	{hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT;}
+{NMR}+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
+({NMR}+\.{NMR}*|{NMR}*\.{NMR}+)		{hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT;}
 ['].[']					{hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
-["](\\\"|[^\"\n])*["]	{hashInsert(yytext, LIT_STRING); return LIT_STRING;}
+["](\\\"|[^\"\n])*["]			{hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 "TRUE"					{hashInsert(yytext, LIT_TRUE); return LIT_TRUE;}
 "FALSE"					{hashInsert(yytext, LIT_FALSE); return LIT_FALSE;}
+
+{BAS}[a-zA-Z_0-9]*			{hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
 
 ">="					{return OPERATOR_GE;}
 "<="					{return OPERATOR_LE;}
 "=="					{return OPERATOR_EQ;}
 "!="					{return OPERATOR_DIF;}
 
-[,;:\(\)\[\]\{\}\+\-*/<>=v\.~&$#]	{return yytext[0];}
 
 "//".*
 "###" 					BEGIN(Comm);
@@ -52,22 +53,24 @@ NMR+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
 <Comm>"\n"				{lineNumber++;}
 <Comm>.
 
+[,;:\(\)\[\]\{\}\+\-*/<>=v\.~&$#]	{return yytext[0];}
 
 "\n"					{lineNumber++;}
-.					    {return TOKEN_ERROR;}
+.					{return TOKEN_ERROR;}
 
 %%
+
 #include "main.c"
 
 int running = 1;
 
-int yyWrap() {
+int yywrap() {
 	running = 0;
 	return 1;
 }
 
 void initMe() {
-	int initHash = hashInit(); // to avoid implicit declaration warning
+	hashInitialize();
 }
 
 int getLineNumber() {
@@ -77,3 +80,4 @@ int getLineNumber() {
 int isRunning() {
 	return running;
 }
+
