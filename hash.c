@@ -3,12 +3,12 @@
 #include <string.h>
 #include "hash.h"
 
-HASH_NODE* HashTable[HASHTABLE_SIZE];
+HASHTABLE_NODE* Hashtable[HASHTABLE_SIZE]; // global hashtable
 
 void hashInitialize (void){
     int node;
     for (node = 0; node < HASHTABLE_SIZE; ++node) {
-        HashTable[node] = INIT_VALUE;
+        Hashtable[node] = INIT_VALUE;
     }
 }
 
@@ -29,10 +29,23 @@ int hashGetAddress(char *text){
     return address - 1;
 }
 
-HASH_NODE* hashInsert(int type, char *text){
-    // TODO
+HASHTABLE_NODE* hashInsert(char *text, int type){
+    HASHTABLE_NODE* newHashtableNode;
+    int addressToAddNode;
+    addressToAddNode = hashGetAddress(text);
+    newHashtableNode = (HASHTABLE_NODE*) calloc(DEFAULT_N_OBJECTS, sizeof(HASHTABLE_NODE*))
+    // needed allocation to avoid a missed pointer
+    newHashtableNode->text = (char*) calloc(strlen(text)+1, sizeof(char));
+    newHashtableNode->type = type;
+    // new node points to the node the last node was pointing to
+    newHashtableNode->next = Hashtable[addressToAddNode];
+    strcpy(newHashtableNode->text, text);
+    // the last node now has to point to the inserted node
+    Hashtable[addressToAddNode] = newHashtableNode;
+
+    return newHashtableNode;
 }
-HASH_NODE* hashFind(char *text){
+HASHTABLE_NODE* hashFind(char *text){
     // TODO
 }
 
