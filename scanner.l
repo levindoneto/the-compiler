@@ -32,7 +32,7 @@ BAS [a-zA-Z_]
 
 BAS[a-zA-Z_0-9]*		{hashInsert(yytext,TK_IDENTIFIER); return TK_IDENTIFIER;}
 
-NMR+					{hashInsert(yytext, LIT_INT); return LIT_INTEGER;}
+NMR+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
 (NMR+\.NMR*|NMR*\.NMR+)	{hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT;}
 ['].[']					{hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 ["](\\\"|[^\"\n])*["]	{hashInsert(yytext, LIT_STRING); return LIT_STRING;}
@@ -67,7 +67,7 @@ int yyWrap() {
 }
 
 void initMe() {
-	hashInit();
+	int initHash = hashInit(); // to avoid implicit declaration warning
 }
 
 int getLineNumber() {

@@ -63,7 +63,7 @@ HASHTABLE_NODE* hashFind(char *value){
 void hashPrint(void){
     HASHTABLE_NODE* hashtableNode;
     int node;
-    for (node = INIT_VALUE; node < HASH_SIZE; ++node){
+    for (node = INIT_VALUE; node < HASHTABLE_SIZE; ++node){
         for (hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next) {
             fprintf(stderr, "Key: %d\nValue: %s\n#################\n", node, hashtableNode->value);
         }
