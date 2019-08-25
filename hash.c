@@ -12,8 +12,21 @@ void hashInitialize (void){
     }
 }
 
+int hashGetNewAddress(int iteratedAddress, char *text) {
+    int newAddress;
+    int address = (iteratedAddress * text[i]) % HASHTABLE_SIZE + 1
+
+    return address;
+}
+
 int hashGetAddress(char *text){
-    // TODO;
+    int address = INIT_ADDRESS;
+    int node;
+    for (node = 0; node < strlen(text); ++node) {
+        // TODO: Verify if key already exists.
+        address = hashGetNewAddress(address, text);
+    }
+    return address - 1;
 }
 
 HASH_NODE* hashInsert(int type, char *text){
