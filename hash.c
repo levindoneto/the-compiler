@@ -6,7 +6,10 @@
 HASH_NODE* HashTable[HASHTABLE_SIZE];
 
 void hashInitialize (void){
-    // TODO
+    int node;
+    for (node = 0; node < HASHTABLE_SIZE; ++node) {
+        HashTable[node] = INIT_VALUE;
+    }
 }
 
 int hashGetAddress(char *text){

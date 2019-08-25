@@ -1,5 +1,6 @@
-#define HASHTABLE_SIZE 997 // prime number
+#define INIT_VALUE 0
 #define TEXT_SIZE 128
+#define HASHTABLE_SIZE 997 // prime number
 
 typedef struct hash_node {
     char *text;
