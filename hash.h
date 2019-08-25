@@ -6,7 +6,7 @@
 #define HASHTABLE_SIZE 997 // prime number
 
 typedef struct HASHTABLE_NODE {
-    char *text;
+    char *value;
     int type;
     struct HASHTABLE_NODE *next;
 } HASHTABLE_NODE;
@@ -22,27 +22,27 @@ void hashInitialize(void);
  * @parameter:  {integer} iterated address from the for loop to get address.
  * @return:     {integer} calculated address.
  */
-int hashGetNewAddress(char *text, int iteratedAddress);
+int hashGetNewAddress(char *value, int iteratedAddress);
 
 /* Function for getting an address
  * for placing a text into the hash table.
- * @parameter:  {string} text.
+ * @parameter:  {string} value.
  * @return:     {integer} address.
  */
-int hashGetAddress(char *text);
+int hashGetAddress(char *value);
 
 /* Function for inserting a text into the hash table.
- * @parameter:  {string} text.
+ * @parameter:  {string} value.
  * @parameter:  {integer} type.
  * @return:     {HASHTABLE_NODE} node of the hash table.
  */
-HASHTABLE_NODE* hashInsert(char *text, int type);
+HASHTABLE_NODE* hashInsert(char *value, int type);
 
-/* Function for finding the node where a text key is placed in.
- * @parameter:  {string} text.
+/* Function for finding the node where a text value is placed in.
+ * @parameter:  {string} value.
  * @return:     {HASHTABLE_NODE} found node of the hash table.
  */
-HASHTABLE_NODE* hashFind(char *text);
+HASHTABLE_NODE* hashFind(char *value);
 
 /* Function for printing the whole hash table in the console.
  * @parameter:  {void}.

@@ -47,8 +47,14 @@ HASHTABLE_NODE* hashInsert(char *text, int type){
 }
 
 HASHTABLE_NODE* hashFind(char *text){
-    // TODO
-
+    HASHTABLE_NODE* hashtableNode;
+    int addressNode;
+    addressNode = hashGetAddress(text);
+    for(hashtableNode = Hashtable[addressNode]; hashtableNode; hashtableNode = hashtableNode->next) {
+        if(!strcmp(text, hashtableNode->text)) {
+            return hashtableNode;
+        }
+    }
     return NODE_NOT_FOUND;
 }
 
