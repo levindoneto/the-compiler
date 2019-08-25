@@ -12,49 +12,51 @@ void hashInitialize (void){
     }
 }
 
-int hashGetNewAddress(int iteratedAddress, char *text) {
+int hashGetNewAddress(int iteratedValue, int iteratedAddress) {
     int newAddress;
-    int address = (iteratedAddress * text[i]) % HASHTABLE_SIZE + 1
+    int address = (iteratedValue* iteratedAddress) % HASHTABLE_SIZE + 1
 
     return address;
 }
 
-int hashGetAddress(char *text){
+int hashGetAddress(char *value){
     int address = INIT_ADDRESS;
     int node;
-    for (node = 0; node < strlen(text); ++node) {
+    for (node = 0; node < strlen(value); ++node) {
         // TODO: Verify if key already exists.
-        address = hashGetNewAddress(address, text);
+        address = hashGetNewAddress(address, value);
     }
+
     return address - 1;
 }
 
-HASHTABLE_NODE* hashInsert(char *text, int type){
+HASHTABLE_NODE* hashInsert(char *value, int type){
     HASHTABLE_NODE* newHashtableNode;
     int addressToAddNode;
-    addressToAddNode = hashGetAddress(text);
+    addressToAddNode = hashGetAddress(value);
     newHashtableNode = (HASHTABLE_NODE*) calloc(DEFAULT_N_OBJECTS, sizeof(HASHTABLE_NODE*))
     // needed allocation to avoid a missed pointer
-    newHashtableNode->text = (char*) calloc(strlen(text)+1, sizeof(char));
+    newHashtableNode->value = (char*) calloc(strlen(value)+1, sizeof(char));
     newHashtableNode->type = type;
     // new node points to the node the last node was pointing to
     newHashtableNode->next = Hashtable[addressToAddNode];
-    strcpy(newHashtableNode->text, text);
+    strcpy(newHashtableNode->value, value);
     // the last node now has to point to the inserted node
     Hashtable[addressToAddNode] = newHashtableNode;
 
     return newHashtableNode;
 }
 
-HASHTABLE_NODE* hashFind(char *text){
+HASHTABLE_NODE* hashFind(char *value){
     HASHTABLE_NODE* hashtableNode;
     int addressNode;
-    addressNode = hashGetAddress(text);
+    addressNode = hashGetAddress(value);
     for(hashtableNode = Hashtable[addressNode]; hashtableNode; hashtableNode = hashtableNode->next) {
-        if(!strcmp(text, hashtableNode->text)) {
+        if(!strcmp(value, hashtableNode->value)) {
             return hashtableNode;
         }
     }
+
     return NODE_NOT_FOUND;
 }
 
@@ -63,7 +65,7 @@ void hashPrint(void){
     int node;
     for (node = INIT_VALUE; i < HASH_SIZE; ++i){
         for (hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next) {
-            fprintf(stderr, "Key: %d\nValue: %s\n#################\n", node, hashtableNode->text);
+            fprintf(stderr, "Key: %d\nValue: %s\n#################\n", node, hashtableNode->value);
         }
     }
 }

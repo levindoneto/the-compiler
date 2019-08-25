@@ -18,11 +18,11 @@ typedef struct HASHTABLE_NODE {
 void hashInitialize(void);
 
 /* Function for obtaining the address to place the node into the hashtable.
- * @parameter:  {string} text to get the ascii from the char within the string.
  * @parameter:  {integer} iterated address from the for loop to get address.
+ * @parameter:  {integer} value from the string from hashGetAddress.
  * @return:     {integer} calculated address.
  */
-int hashGetNewAddress(char *value, int iteratedAddress);
+int hashGetNewAddress(int iteratedAddress, int iteratedValue);
 
 /* Function for getting an address
  * for placing a text into the hash table.
