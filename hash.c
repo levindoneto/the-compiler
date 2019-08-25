@@ -45,10 +45,19 @@ HASHTABLE_NODE* hashInsert(char *text, int type){
 
     return newHashtableNode;
 }
+
 HASHTABLE_NODE* hashFind(char *text){
     // TODO
+
+    return NODE_NOT_FOUND;
 }
 
 void hashPrint(void){
-    // TODO
+    HASHTABLE_NODE* hashtableNode;
+    int node;
+    for (node = INIT_VALUE; i < HASH_SIZE; ++i){
+        for (hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next) {
+            fprintf(stderr, "Key: %d\nValue: %s\n#################\n", node, hashtableNode->text);
+        }
+    }
 }
