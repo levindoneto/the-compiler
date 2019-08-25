@@ -59,10 +59,10 @@ NMR+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
 %%
 #include "main.c"
 
-int isRunning = 1;
+int running = 1;
 
 int yyWrap() {
-	isRunning = 0;
+	running = 0;
 	return 1;
 }
 
@@ -75,5 +75,5 @@ int getLineNumber() {
 }
 
 int isRunning() {
-	return isRunning;
+	return running;
 }
