@@ -24,7 +24,7 @@ int hashGetAddress(char *value){
     int node;
     for (node = 0; node < strlen(value); ++node) {
         // TODO: Verify if key already exists.
-        address = hashGetNewAddress(address, node);
+        address = hashGetNewAddress(address, value[node]);
     }
 
     return address - 1;
