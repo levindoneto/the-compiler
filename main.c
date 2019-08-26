@@ -50,6 +50,7 @@ int main(int argc, char ** argv) {
 				case LIT_FALSE: printf("LIT_FALSE = linha %d \n", getLineNumber()); break;
 				case LIT_TRUE: printf("LIT_TRUE = linha %d \n", getLineNumber()); break;
 
+
 				case TOKEN_ERROR: printf("TOKEN_ERROR |%s| = linha %d \n", yytext, getLineNumber()); break;
 			
 				default: if(yytext[0])printf("TOKEN_ESPECIAL |%s| = linha %d \n", yytext, getLineNumber()); break;
