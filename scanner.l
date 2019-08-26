@@ -39,6 +39,8 @@ BAS [a-zA-Z_]
 "TRUE"					{hashInsert(yytext, LIT_TRUE); return LIT_TRUE;}
 "FALSE"					{hashInsert(yytext, LIT_FALSE); return LIT_FALSE;}
 
+[,;:\(\)\[\]\{\}\+\-*/<>=v\.~&$#]	{return yytext[0];}
+
 {BAS}[a-zA-Z_0-9]*			{hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
 
 ">="					{return OPERATOR_GE;}
@@ -53,7 +55,6 @@ BAS [a-zA-Z_]
 <Comm>"\n"				{lineNumber++;}
 <Comm>.
 
-[,;:\(\)\[\]\{\}\+\-*/<>=v\.~&$#]	{return yytext[0];}
 
 "\n"					{lineNumber++;}
 .					{return TOKEN_ERROR;}
