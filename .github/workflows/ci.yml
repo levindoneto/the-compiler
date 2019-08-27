@@ -10,8 +10,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: configure
-      run: ssh install_dependencies.sh
+      run: sh install_dependencies.sh
     - name: make
       run: make
     - name: make check
-      run: ./etapa1 test1.txt
+      run:
+      - ./etapa1 tests/test1.txt
+      - ./etapa1 tests/test2.txt
+      - ./etapa1 tests/test3.txt
