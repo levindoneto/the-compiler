@@ -13,8 +13,9 @@ jobs:
       run: sh install_dependencies.sh
     - name: make
       run: make
-    - name: make check
-      run:
-      - ./etapa1 tests/test1.txt
-      - ./etapa1 tests/test2.txt
-      - ./etapa1 tests/test3.txt
+    - name: test1
+      run: ./etapa1 tests/test1.txt
+    - name: test2
+      run: ./etapa1 tests/test2.txt
+    - name: test3
+      run: ./etapa1 tests/test3.txt
