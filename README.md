@@ -1,6 +1,8 @@
 # Break192 Compiler
 Implementation of a compiler for the language **break192**.
 
+![Building Status](http://aliyunfc.tarocch1.com/github-actions-badge/levindoneto/the-compiler)
+
 **Authors:** Levindo Neto and Thiago Barp.
 
 ## Building status
