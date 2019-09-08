@@ -6,7 +6,6 @@
 	int yyerror();
 %}
 
-
 %token KW_BYTE
 %token KW_INT
 %token KW_LONG
@@ -36,8 +35,32 @@
 
 
 %%
-program: |
+program: program declaration
+	|
 	;
+
+declaration: variableDeclaration | functionDeclaration
+        ;
+
+variableDeclaration: KW_INT TK_IDENTIFIER '=' LIT_INTEGER ';'
+        ;
+
+initializationLiterals: LIT_INTEGER
+        ;
+
+functionDeclaration: KW_INT TK_IDENTIFIER '(' ')' command
+        ;
+
+command: TK_IDENTIFIER '=' LIT_FLOAT
+        | block
+        ;
+
+block: '{' commandList '}'
+        ;
+
+commandList: commandList command ';'
+        |
+        ;
 
 %%
 

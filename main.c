@@ -56,8 +56,7 @@ int main(int argc, char ** argv) {
 		exit(2);
 	}
 	initMe(); // init hashtable structure
-	//parsingResult = yyparse(); // Check if the content belongs to break192
-	parsingResult = 0; // TODO: Change it
+	parsingResult = yyparse(); // Check if the content belongs to break192
 	if(parsingResult == 0) {
         	fprintf(stderr, "Code accepted regarding the grammar\n");
 	        exit(0); // 0: for file alright
