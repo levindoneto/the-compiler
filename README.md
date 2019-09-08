@@ -1,5 +1,6 @@
 # Break192 Compiler
 Implementation of a compiler for the language **break192**.
+
 **Authors:** Levindo Neto and Thiago Barp.
 
 ## Building status
