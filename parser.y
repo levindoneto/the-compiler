@@ -26,13 +26,13 @@
 %token OPERATOR_EQ
 %token OPERATOR_DIF
 %token TOKEN_ERROR
-%token<symbol> TK_IDENTIFIER
-%token<symbol> LIT_INTEGER
-%token<symbol> LIT_FLOAT
-%token<symbol> LIT_TRUE
-%token<symbol> LIT_FALSE
-%token<symbol> LIT_CHAR
-%token<symbol> LIT_STRING
+%token TK_IDENTIFIER
+%token LIT_INTEGER
+%token LIT_FLOAT
+%token LIT_TRUE
+%token LIT_FALSE
+%token LIT_CHAR
+%token LIT_STRING
 
 
 %%
@@ -40,14 +40,25 @@ program: program declaration
 	|
 	;
 
-declaration: variableDeclaration | functionDeclaration
+declaration: variableDeclaration 
+	| functionDeclaration
         ;
 
-variableDeclaration: KW_INT TK_IDENTIFIER '=' LIT_INTEGER ';'
+variableDeclaration: 	KW_INT 					TK_IDENTIFIER '=' LIT_INTEGER 	';'
+	|		KW_BOOL 				TK_IDENTIFIER '=' boolValue	';'
+	|		KW_LONG 				TK_IDENTIFIER '=' LIT_INTEGER 	';'
+	|		KW_FLOAT 				TK_IDENTIFIER '=' LIT_FLOAT 	';'
+	|		KW_BYTE					TK_IDENTIFIER '=' LIT_CHAR 	';'
+	|		KW_INT 		'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_INTEGER 	';'
+	|		KW_BOOL 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' boolValue	';'
+	|		KW_LONG 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_INTEGER 	';'
+	|		KW_FLOAT 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_FLOAT 	';'
+	|		KW_BYTE 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_CHAR 	';'
         ;
 
-initializationLiterals: LIT_INTEGER
-        ;
+boolValue:		LIT_TRUE
+	|		LIT_FALSE
+	;
 
 functionDeclaration: KW_INT TK_IDENTIFIER '(' ')' command
         ;
