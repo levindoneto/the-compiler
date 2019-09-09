@@ -36,18 +36,22 @@
 %nonassoc JUSTIF
 %nonassoc KW_ELSE
 
+%nonassoc noSemiColon
+%nonassoc ';'
+
 
 %%
-program: 	program declaration
+program: 		program declaration
 	|
 	;
 
-declaration: 	variableDeclaration 
-	| 	functionDeclaration
+declaration: 		variableDeclaration 
+	| 		functionDeclaration
         ;
 
+//		VARIABLE DECLARATION
 variableDeclaration: 	variableType				TK_IDENTIFIER '=' variableValue 	';'
-	|		variableType	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' vectorValue	 	';'
+	|		variableType	'[' LIT_INTEGER ']' 	TK_IDENTIFIER  vectorValue	 	';'
         ;
 
 variableType:		KW_BOOL
@@ -57,16 +61,21 @@ variableType:		KW_BOOL
 	|		KW_FLOAT
 	;
 
-vectorValue:	vectorValue variableValue
+vectorValue:		':' variableValue vectorRemainder
+	|		
+	;
+
+vectorRemainder:	variableValue vectorRemainder
 	|
 	;
 
 variableValue:		LIT_INTEGER
 	|		LIT_FLOAT
 	|		LIT_CHAR
+	|		booleanValue
 	;
 
-
+//		FUNCTION DECLARATION
 functionDeclaration: variableType TK_IDENTIFIER '(' paramList ')' commandBlock
         ;
 
@@ -81,8 +90,16 @@ remainder:		',' param remainder
 param:			variableType TK_IDENTIFIER
 	;
 
-
+// 		COMMAND BLOCK
 commandBlock:		'{' command commandRemainder '}'
+	;
+
+commandFlux:		'{' command commandRemainder '}'
+	|		command commandEnd
+	;
+
+commandEnd:		';'
+	|		%prec noSemiColon
 	;
 
 commandRemainder:	';' command commandRemainder
@@ -97,13 +114,15 @@ command: 		assignement
 	|
         ;
 
+//		COMMANDS
 assignement:		TK_IDENTIFIER '=' expression
 	|		TK_IDENTIFIER '[' expression ']' '=' expression
 	;
 
-fluxControl:		KW_IF 		'(' expression ')' KW_THEN command %prec JUSTIF
-	|		KW_IF 		'(' expression ')' KW_THEN command KW_ELSE command
-	|		KW_WHILE	'(' expression ')' 	   command KW_BREAK
+fluxControl:		KW_IF 		'(' expression ')' KW_THEN commandFlux %prec JUSTIF
+	|		KW_IF 		'(' expression ')' KW_THEN commandFlux KW_ELSE commandFlux
+	|		KW_WHILE	'(' expression ')' 	   commandFlux KW_BREAK
+//	|		KW_FOR		'(' command ',' expression ',' command ')' command
 	;
 
 readComm:		KW_READ	  TK_IDENTIFIER
@@ -123,11 +142,13 @@ printElement:		printValue printElement
 returnComm:		KW_RETURN expression
 	;
 
+//		EXPRESSIONS
 expression:		arithmetic
 	|		booleanExp
 	|		TK_IDENTIFIER '(' paramList ')'
 	;
 
+//		ARITHMETIC PART
 arithmetic:		arithmeticValue arithmeticRemainder
 	;
 
@@ -158,26 +179,31 @@ arithmeticOp:		'*'
 	|		'-'
 	;
 
-booleanExp:		booleanValues booleanRemainder
-	|		arithmetic comparativeOp arithmetic
+//		BOOLEAN PART
+booleanExp:		booleanValue booleanRemainder
 	;
 
-booleanRemainder:	booleanOp booleanValues booleanRemainder
-	|		
+booleanRemainder:	booleanOp booleanValue booleanRemainder
+	|
 	;
 
-booleanValues:		LIT_FALSE
+booleanValue:		LIT_FALSE
 	|		LIT_TRUE
+	|		arithmetic comparativeOp arithmetic
 	;
 
 booleanOp:		'.'
 	|		'v'
 	|		'~'
+//	|		'#'
+//	|		'$'
+//	|		'&'
 	;
 
 comparativeOp:		OPERATOR_LE
 	|		OPERATOR_GE
 	|		OPERATOR_EQ
+//	|		OPERATOR_DIF
 	|		'<'
 	|		'>'
 	;
