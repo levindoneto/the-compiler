@@ -1,7 +1,6 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
-	#include "hash.h"
 	int getLineNumber(void);
 	int yylex();
 	int yyerror();
@@ -36,32 +35,54 @@
 
 
 %%
-program: program declaration
+program: 	program declaration
 	|
 	;
 
-declaration: variableDeclaration 
-	| functionDeclaration
+declaration: 	variableDeclaration 
+	| 	functionDeclaration
         ;
 
-variableDeclaration: 	KW_INT 					TK_IDENTIFIER '=' LIT_INTEGER 	';'
-	|		KW_BOOL 				TK_IDENTIFIER '=' boolValue	';'
-	|		KW_LONG 				TK_IDENTIFIER '=' LIT_INTEGER 	';'
-	|		KW_FLOAT 				TK_IDENTIFIER '=' LIT_FLOAT 	';'
-	|		KW_BYTE					TK_IDENTIFIER '=' LIT_CHAR 	';'
-	|		KW_INT 		'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_INTEGER 	';'
-	|		KW_BOOL 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' boolValue	';'
-	|		KW_LONG 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_INTEGER 	';'
-	|		KW_FLOAT 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_FLOAT 	';'
-	|		KW_BYTE 	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' LIT_CHAR 	';'
+
+
+
+variableDeclaration: 	variableType				TK_IDENTIFIER '=' variableValue 	';'
+	|		variableType	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' vectorValue	 	';'
         ;
 
-boolValue:		LIT_TRUE
-	|		LIT_FALSE
+variableType:		KW_BOOL
+	|		KW_BYTE
+	|		KW_INT
+	|		KW_LONG
+	|		KW_FLOAT
 	;
 
-functionDeclaration: KW_INT TK_IDENTIFIER '(' ')' command
+vectorValue:	vectorValue variableValue
+	|
+	;
+
+variableValue:		LIT_INTEGER
+	|		LIT_FLOAT
+	|		LIT_CHAR
+	;
+
+
+
+
+
+functionDeclaration: KW_INT TK_IDENTIFIER '(' paramList ')' command
         ;
+
+paramList:	param remainder
+	|
+	;
+
+remainder:	',' param remainder
+	|
+	;
+
+param:		variableType TK_IDENTIFIER
+	;
 
 command: TK_IDENTIFIER '=' LIT_FLOAT
         | block
