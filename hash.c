@@ -68,7 +68,7 @@ void hashPrint(void){
     printf("\nHASHTABLE:\n");
     for (node = INIT_VALUE; node < HASHTABLE_SIZE; ++node){
         for (hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next) {
-            fprintf(stderr, "'%d': {'value': %s, 'type': '%d'},\n", node, hashtableNode->value, hashtableNode->type);
+            fprintf(stderr, "'%d': {'value': %s, 'type': %d},\n", node, hashtableNode->value, hashtableNode->type);
         }
     }
 }
