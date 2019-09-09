@@ -40,6 +40,7 @@
 %nonassoc ';'
 
 
+
 %%
 program: 		program declaration
 	|
@@ -47,12 +48,15 @@ program: 		program declaration
 
 declaration: 		variableDeclaration 
 	| 		functionDeclaration
+	|		vectorDeclaration
         ;
 
 //		VARIABLE DECLARATION
-variableDeclaration: 	variableType				TK_IDENTIFIER '=' variableValue 	';'
-	|		variableType	'[' LIT_INTEGER ']' 	TK_IDENTIFIER  vectorValue	 	';'
+variableDeclaration: 	variableType	TK_IDENTIFIER 			'=' variableValue 	';'
         ;
+
+vectorDeclaration:	variableType	TK_IDENTIFIER '[' LIT_INTEGER ']' 	 vectorValue	 	';'
+	;
 
 variableType:		KW_BOOL
 	|		KW_BYTE
@@ -121,8 +125,9 @@ assignement:		TK_IDENTIFIER '=' expression
 
 fluxControl:		KW_IF 		'(' expression ')' KW_THEN commandFlux %prec JUSTIF
 	|		KW_IF 		'(' expression ')' KW_THEN commandFlux KW_ELSE commandFlux
-	|		KW_WHILE	'(' expression ')' 	   commandFlux KW_BREAK
-//	|		KW_FOR		'(' command ',' expression ',' command ')' command
+	|		KW_WHILE	'(' expression ')' 	   commandFlux 
+	|		KW_FOR		'(' TK_IDENTIFIER ':' expression ',' expression ',' expression ')' commandFlux
+	|		KW_BREAK
 	;
 
 readComm:		KW_READ	  TK_IDENTIFIER
@@ -145,7 +150,23 @@ returnComm:		KW_RETURN expression
 //		EXPRESSIONS
 expression:		arithmetic
 	|		booleanExp
-	|		TK_IDENTIFIER '(' paramList ')'
+	|		TK_IDENTIFIER '(' argList ')'
+	;
+
+argList:		argument argRemainder
+	|
+	;
+
+argRemainder:		',' argument argRemainder
+	|
+	;
+
+argument:		TK_IDENTIFIER
+	|		LIT_FLOAT
+	|		LIT_TRUE
+	|		LIT_FALSE
+	|		LIT_INTEGER
+	|		LIT_CHAR
 	;
 
 //		ARITHMETIC PART
@@ -167,6 +188,7 @@ arithmeticBegin:	arithmeticValue arithmeticOp arithmeticBegin
 arithmeticValue:	identifiers
 	|		LIT_INTEGER
 	|		LIT_CHAR
+	|		LIT_FLOAT
 	;
 
 identifiers:		TK_IDENTIFIER
@@ -203,7 +225,7 @@ booleanOp:		'.'
 comparativeOp:		OPERATOR_LE
 	|		OPERATOR_GE
 	|		OPERATOR_EQ
-//	|		OPERATOR_DIF
+	|		OPERATOR_DIF
 	|		'<'
 	|		'>'
 	;
