@@ -33,6 +33,9 @@
 %token LIT_CHAR
 %token LIT_STRING
 
+%nonassoc JUSTIF
+%nonassoc KW_ELSE
+
 
 %%
 program: 	program declaration
@@ -42,9 +45,6 @@ program: 	program declaration
 declaration: 	variableDeclaration 
 	| 	functionDeclaration
         ;
-
-
-
 
 variableDeclaration: 	variableType				TK_IDENTIFIER '=' variableValue 	';'
 	|		variableType	'[' LIT_INTEGER ']' 	TK_IDENTIFIER ':' vectorValue	 	';'
@@ -67,33 +67,120 @@ variableValue:		LIT_INTEGER
 	;
 
 
-
-
-
-functionDeclaration: KW_INT TK_IDENTIFIER '(' paramList ')' command
+functionDeclaration: variableType TK_IDENTIFIER '(' paramList ')' commandBlock
         ;
 
-paramList:	param remainder
+paramList:		param remainder
 	|
 	;
 
-remainder:	',' param remainder
+remainder:		',' param remainder
 	|
 	;
 
-param:		variableType TK_IDENTIFIER
+param:			variableType TK_IDENTIFIER
 	;
 
-command: TK_IDENTIFIER '=' LIT_FLOAT
-        | block
+
+commandBlock:		'{' command commandRemainder '}'
+	;
+
+commandRemainder:	';' command commandRemainder
+	|
+	;
+
+command: 		assignement
+	| 		fluxControl
+	|		readComm
+	|		printComm
+	|		returnComm
+	|
         ;
 
-block: '{' commandList '}'
-        ;
+assignement:		TK_IDENTIFIER '=' expression
+	|		TK_IDENTIFIER '[' expression ']' '=' expression
+	;
 
-commandList: commandList command ';'
-        |
-        ;
+fluxControl:		KW_IF 		'(' expression ')' KW_THEN command %prec JUSTIF
+	|		KW_IF 		'(' expression ')' KW_THEN command KW_ELSE command
+	|		KW_WHILE	'(' expression ')' 	   command KW_BREAK
+	;
+
+readComm:		KW_READ	  TK_IDENTIFIER
+	;
+
+printComm:		KW_PRINT  printValue printElement
+	;
+
+printValue:		expression
+	|		LIT_STRING
+	;
+
+printElement:		printValue printElement
+	|
+	;
+
+returnComm:		KW_RETURN expression
+	;
+
+expression:		arithmetic
+	|		booleanExp
+	|		TK_IDENTIFIER '(' paramList ')'
+	;
+
+arithmetic:		arithmeticValue arithmeticRemainder
+	;
+
+arithmeticRemainder:	arithmeticOp arithmeticBegin '(' arithmetic ')' arithmeticEnd
+	|		arithmeticEnd
+	;
+
+arithmeticEnd:		arithmeticOp arithmeticValue arithmeticEnd
+	|
+	;
+
+arithmeticBegin:	arithmeticValue arithmeticOp arithmeticBegin
+	|
+	;
+
+arithmeticValue:	identifiers
+	|		LIT_INTEGER
+	|		LIT_CHAR
+	;
+
+identifiers:		TK_IDENTIFIER
+	|		TK_IDENTIFIER '[' expression ']'
+	;
+
+arithmeticOp:		'*'
+	|		'/'
+	|		'+'
+	|		'-'
+	;
+
+booleanExp:		booleanValues booleanRemainder
+	|		arithmetic comparativeOp arithmetic
+	;
+
+booleanRemainder:	booleanOp booleanValues booleanRemainder
+	|		
+	;
+
+booleanValues:		LIT_FALSE
+	|		LIT_TRUE
+	;
+
+booleanOp:		'.'
+	|		'v'
+	|		'~'
+	;
+
+comparativeOp:		OPERATOR_LE
+	|		OPERATOR_GE
+	|		OPERATOR_EQ
+	|		'<'
+	|		'>'
+	;
 
 %%
 
