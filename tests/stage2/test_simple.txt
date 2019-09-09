@@ -1,14 +1,3 @@
 int x = 10;
 int y = 20;
 int k = 654;
-
-int funcao ()
-{
-x = 4.8;
-y = 7.5;
-}
-
-int funcaodois ()
-{
-k = 2.0;
-}

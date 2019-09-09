@@ -6,7 +6,9 @@ extern int getLineNumber();
 extern int isRunning();
 extern void initMe();
 extern int yylex();
-//extern void printHash();
+extern void showToken(int tok);
+extern void hashPrint();
+
 extern FILE *yyin;
 extern char *yytext;
 extern int running;
@@ -57,10 +59,9 @@ int main(int argc, char ** argv) {
 	}
 	initMe(); // init hashtable structure
 	parsingResult = yyparse(); // Check if the content belongs to break192
-
 	if(parsingResult == 0) {
         	fprintf(stderr, "Code accepted regarding the grammar\n");
-	        //printHash(); // print the whole structuring after parsing it
+	        hashPrint(); // print the whole structuring after parsing it
 	        exit(0); // 0: for file alright
     	}  else {
        		fprintf(stderr, "Error parsing the code on line %d\n", getLineNumber());
