@@ -5,7 +5,7 @@ int k = 654;
 int funcao ()
 {
 x = 4.8;
-y = 7.5
+y = 7.5;
 }
 
 int funcaodois ()

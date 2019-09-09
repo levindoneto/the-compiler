@@ -1,11 +1,10 @@
 %{
-#include "y.tab.h"
+#include "y.tab.c"
+#include "hash.c"
 
 // both following variables are initialized by the function initMe()
 int lineNumber;
 int running;
-
-#include "hash.c"
 
 %}
 
