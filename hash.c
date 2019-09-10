@@ -23,7 +23,6 @@ int hashGetAddress(char *value){
     int address = INIT_ADDRESS;
     int node;
     for (node = 0; node < strlen(value); ++node) {
-        // TODO: Verify if key already exists.
         address = hashGetNewAddress(address, value[node]);
     }
 
@@ -35,7 +34,7 @@ HASHTABLE_NODE* hashInsert(char *value, int type){
     int addressToAddNode;
     addressToAddNode = hashGetAddress(value);
     if (hashFind(value) == NULL) { // it just adds to the hashtable if the value hasn't been found before
-        newHashtableNode = (HASHTABLE_NODE*) calloc(DEFAULT_N_OBJECTS, sizeof(HASHTABLE_NODE*));
+        newHashtableNode = (HASHTABLE_NODE*) calloc(DEFAULT_N_OBJECTS, sizeof(HASHTABLE_NODE));
         // needed allocation to avoid a missed pointer
         newHashtableNode->value = (char*) calloc(strlen(value)+1, sizeof(char));
         newHashtableNode->type = type;
@@ -66,9 +65,10 @@ HASHTABLE_NODE* hashFind(char *value){
 void hashPrint(void){
     HASHTABLE_NODE* hashtableNode;
     int node;
+    printf("\nHASHTABLE:\n");
     for (node = INIT_VALUE; node < HASHTABLE_SIZE; ++node){
         for (hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next) {
-            fprintf(stderr, "Key: %d\nValue: %s\nAddress: %p\n#################\n", node, hashtableNode->value, hashtableNode);
+            fprintf(stderr, "'%d': {'value': %s, 'type': %d},\n", node, hashtableNode->value, hashtableNode->type);
         }
     }
 }

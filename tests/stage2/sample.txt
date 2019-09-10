@@ -1,0 +1,17 @@
+// UFRGS - Compiladores - Marcelo Johann - 2019/2
+
+bool b = FALSE;
+byte c = 'x';
+int a = 0;
+int i = 0;
+long l = 0;
+float f = 0.0;
+int v1[10]: 0 0 0 0 0 0 0 0 0 0; 
+int mat [ 10];
+
+int main ()
+{
+  a = 5;
+  v1[a] = 55;
+  print v1[55];
+}

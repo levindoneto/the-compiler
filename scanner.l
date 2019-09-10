@@ -1,9 +1,10 @@
 %{
-#include "tokens.h"
-
-int lineNumber = 1;
-
+#include "y.tab.c"
 #include "hash.c"
+
+// both following variables are initialized by the function initMe()
+int lineNumber;
+int running;
 
 %}
 
@@ -14,7 +15,7 @@ BAS [a-zA-Z_]
 
 %%
 
-[ \t\r]                 		
+[ \t\r]
 
 "byte"					{return KW_BYTE;}
 "int"					{return KW_INT;}
@@ -50,7 +51,7 @@ BAS [a-zA-Z_]
 
 
 "//".*
-"###" 					BEGIN(Comm);
+"###"					BEGIN(Comm);
 <Comm>"###"				BEGIN(INITIAL);
 <Comm>"\n"				{lineNumber++;}
 <Comm>.
@@ -63,14 +64,14 @@ BAS [a-zA-Z_]
 
 #include "main.c"
 
-int running = 1;
-
 int yywrap() {
 	running = 0;
 	return 1;
 }
 
 void initMe() {
+	running = 1;
+	lineNumber = 1;
 	hashInitialize();
 }
 
