@@ -53,3 +53,12 @@ jobs:
         then
           echo "SUCCESS"
         fi
+    - name: test6
+      run: |
+        ./etapa2 tests/stage2/complete.txt
+        echo $?
+        if [ $? -eq 0 ]
+        then
+          echo "SUCCESS"
+        fi
+
