@@ -80,7 +80,7 @@ variableValue:		LIT_INTEGER
 	;
 
 //		FUNCTION DECLARATION
-functionDeclaration: variableType TK_IDENTIFIER '(' paramList ')' commandBlock
+functionDeclaration: variableType TK_IDENTIFIER '(' paramList ')' '{' commandBlock '}'
         ;
 
 paramList:		param remainder
@@ -95,14 +95,18 @@ param:			variableType TK_IDENTIFIER
 	;
 
 // 		COMMAND BLOCK
-commandBlock:		'{' command commandRemainder '}'
+commandBlock:		command commandRemainder
 	;
 
-commandFlux:		'{' command commandRemainder '}'
-	|		command commandEnd
+commandFlux:		'{' command commandRemainderFlux
+	|		command commandEnd command
 	;
 
-commandEnd:		';'
+commandRemainderFlux:	';' command commandRemainderFlux
+	|		'}' command
+	;
+
+commandEnd:		';' 
 	|		%prec noSemiColon
 	;
 
@@ -110,13 +114,16 @@ commandRemainder:	';' command commandRemainder
 	|
 	;
 
-command: 		assignement
-	| 		fluxControl
-	|		readComm
-	|		printComm
-	|		returnComm
+
+command: 		assignement 
+	|		readComm 
+	|		printComm 
+	|		returnComm 
+	|		fluxControl 
 	|
         ;
+
+
 
 //		COMMANDS
 assignement:		TK_IDENTIFIER '=' expression
