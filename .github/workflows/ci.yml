@@ -49,7 +49,7 @@ jobs:
       run: |
         ./etapa2 tests/stage2/sample4_error.txt
         echo $?
-        if [ $? -eq 0 ]
+        if [ $? -eq 3 ]
         then
           echo "SUCCESS"
         fi
