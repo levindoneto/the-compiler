@@ -1,9 +1,12 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+	//#include "lex.yy.h"
+	#include "ast.h"
+	#include "hash.h"
 	int getLineNumber(void);
-	int yylex();
-	int yyerror();
+	//int yylex();
+	int yyerror(char*);
 %}
 
 %token KW_BYTE
@@ -94,7 +97,7 @@ remainder:		',' param remainder
 param:			variableType TK_IDENTIFIER
 	;
 
-// 		COMMAND BLOCK
+// COMMAND BLOCK
 commandBlock:		command commandRemainder
 	;
 
