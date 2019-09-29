@@ -15,42 +15,9 @@ jobs:
       run: make
     - name: test1
       run: |
-        ./etapa2 tests/stage2/test_simple.txt
+        ./etapa3 tests/stage2/test_simple.txt
         echo $?
         if [ $? -eq 0 ]
         then
           echo "SUCCESS"
         fi
-    - name: test2
-      run: |
-        ./etapa2 tests/stage2/sample.txt
-        echo $?
-        if [ $? -eq 0 ]
-        then
-          echo "SUCCESS"
-        fi
-    - name: test3
-      run: |
-        ./etapa2 tests/stage2/sample2.txt
-        echo $?
-        if [ $? -eq 0 ]
-        then
-          echo "SUCCESS"
-        fi
-    - name: test4
-      run: |
-        ./etapa2 tests/stage2/sample3.txt
-        echo $?
-        if [ $? -eq 0 ]
-        then
-          echo "SUCCESS"
-        fi
-    - name: test5
-      run: |
-        ./etapa2 tests/stage2/complete.txt
-        echo $?
-        if [ $? -eq 0 ]
-        then
-          echo "SUCCESS"
-        fi
-
