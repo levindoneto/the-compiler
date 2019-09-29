@@ -17,7 +17,7 @@ typedef struct ast_node {
     int type;
     HASHTABLE_NODE *symbol;
     struct ast_node *son[MAX_SONS];
-} AST_NODE;
+} AST;
 
 /* Function for creating a node in the tree.
  * @param {int} type.
@@ -29,13 +29,13 @@ typedef struct ast_node {
  * @return {AST_NODE*} tree
  *
  */
-AST_NODE* astCreate(int type, HASHTABLE_NODE* symbol, AST_NODE* son0, AST_NODE* son1, AST_NODE* son2, AST_NODE* son3);
+AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3);
 
 /* Function for printing the tree.
  * @param {AST_NODE*} node.
  * @return {int} level to print to.
  *
  */
-void astPrint(AST_NODE* node, int level);
+void astPrint(AST* node, int level);
 
 #endif
