@@ -34,7 +34,7 @@ BAS [a-zA-Z_]
 "return"				{return KW_RETURN;}
 "break"					{return KW_BREAK;}
 
-{NMR}+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
+{NMR}+					{hashInsert(yytext, LIT_INTEGER); yylval.value=atoi(yytext); return LIT_INTEGER;}
 ({NMR}+\.{NMR}*|{NMR}*\.{NMR}+)		{hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT;}
 ['].[']					{hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 ["](\\\"|[^\"\n])*["]			{hashInsert(yytext, LIT_STRING); return LIT_STRING;}
