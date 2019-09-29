@@ -1,3 +1,6 @@
+#ifndef HASHTABLE_HEADER
+#define HASHTABLE_HEADER
+
 #define NODE_NOT_FOUND -1 // when the node is not found withing the hashtable
 #define INIT_VALUE 0
 #define INIT_ADDRESS 1
@@ -49,3 +52,5 @@ HASHTABLE_NODE* hashFind(char *value);
  * @return:     {void}.
  */
 void hashPrint(void);
+
+#endif

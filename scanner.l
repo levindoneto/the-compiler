@@ -1,6 +1,7 @@
 %{
-#include "y.tab.c"
-#include "hash.c"
+#include "y.tab.h"
+#include "hash.h"
+#include "ast.h"
 
 // both following variables are initialized by the function initMe()
 int lineNumber;
@@ -61,8 +62,6 @@ BAS [a-zA-Z_]
 .					{return TOKEN_ERROR;}
 
 %%
-
-#include "main.c"
 
 int yywrap() {
 	running = 0;

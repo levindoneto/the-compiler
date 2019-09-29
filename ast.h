@@ -1,5 +1,5 @@
-#ifndef AST_H
-#define AST_H
+#ifndef AST_HEADER
+#define AST_HEADER
 
 #include "hash.h"
 
@@ -15,7 +15,7 @@
 
 typedef struct ast_node {
     int type;
-    HASH_NODE *symbol;
+    HASHTABLE_NODE *symbol;
     struct ast_node *son[MAX_SONS];
 } AST_NODE;
 
@@ -27,13 +27,15 @@ typedef struct ast_node {
  * @param {AST*} son2.
  * @param {AST*} son3.
  * @return {AST_NODE*} tree
- * 
+ *
  */
-AST_NODE* astCreate(int type, HASH_NODE* symbol, AST_NODE* son0, AST_NODE* son1, AST_NODE* son2, AST_NODE* son3);
+AST_NODE* astCreate(int type, HASHTABLE_NODE* symbol, AST_NODE* son0, AST_NODE* son1, AST_NODE* son2, AST_NODE* son3);
 
 /* Function for printing the tree.
  * @param {AST_NODE*} node.
  * @return {int} level to print to.
- * 
+ *
  */
 void astPrint(AST_NODE* node, int level);
+
+#endif
