@@ -9,6 +9,11 @@
 	int yyerror(char*);
 %}
 
+%union
+{
+	int value;
+}
+
 %token KW_BYTE
 %token KW_INT
 %token KW_LONG
@@ -29,8 +34,9 @@
 %token OPERATOR_DIF
 %token TOKEN_ERROR
 %token TK_IDENTIFIER
-%token LIT_INTEGER
-%token LIT_FLOAT
+
+%token<value> LIT_INTEGER
+%token<value> LIT_FLOAT
 %token LIT_TRUE
 %token LIT_FALSE
 %token LIT_CHAR
@@ -45,20 +51,20 @@
 
 
 %%
-program: 		program declaration
+program:		program declaration
 	|
 	;
 
-declaration: 		variableDeclaration 
-	| 		functionDeclaration
+declaration:		variableDeclaration 
+	|		functionDeclaration
 	|		vectorDeclaration
         ;
 
 //		VARIABLE DECLARATION
-variableDeclaration: 	variableType	TK_IDENTIFIER 			'=' variableValue 	';'
+variableDeclaration: variableType TK_IDENTIFIER	'=' variableValue ';'
         ;
 
-vectorDeclaration:	variableType	TK_IDENTIFIER '[' LIT_INTEGER ']' 	 vectorValue	 	';'
+vectorDeclaration:	variableType TK_IDENTIFIER '[' LIT_INTEGER ']' vectorValue ';'
 	;
 
 variableType:		KW_BOOL
@@ -76,8 +82,8 @@ vectorRemainder:	variableValue vectorRemainder
 	|
 	;
 
-variableValue:		LIT_INTEGER
-	|		LIT_FLOAT
+variableValue:		LIT_INTEGER {fprintf(stderr, "INT_Id=%d\n", $1);}
+	|		LIT_FLOAT {fprintf(stderr, "FLOAT_Id=%d\n", $1);}
 	|		LIT_CHAR
 	|		booleanValue
 	;
@@ -118,7 +124,7 @@ commandRemainder:	';' command commandRemainder
 	;
 
 
-command: 		assignement 
+command:		assignement 
 	|		readComm 
 	|		printComm 
 	|		returnComm 
@@ -133,9 +139,9 @@ assignement:		TK_IDENTIFIER '=' expression
 	|		TK_IDENTIFIER '[' expression ']' '=' expression
 	;
 
-fluxControl:		KW_IF 		'(' expression ')' KW_THEN commandFlux %prec JUSTIF
-	|		KW_IF 		'(' expression ')' KW_THEN commandFlux KW_ELSE commandFlux
-	|		KW_WHILE	'(' expression ')' 	   commandFlux 
+fluxControl:		KW_IF		'(' expression ')' KW_THEN commandFlux %prec JUSTIF
+	|		KW_IF		'(' expression ')' KW_THEN commandFlux KW_ELSE commandFlux
+	|		KW_WHILE	'(' expression ')' commandFlux 
 	|		KW_FOR		'(' TK_IDENTIFIER ':' expression ',' expression ',' expression ')' commandFlux
 	|		KW_BREAK
 	;
