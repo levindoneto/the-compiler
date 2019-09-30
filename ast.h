@@ -2,6 +2,9 @@
 #define AST_HEADER
 
 #include "hash.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #define SON_ZERO 0
 #define SON_ONE 1
@@ -12,6 +15,7 @@
 #define MAX_SONS 4
 
 // TODO: Define here the AST Symbols
+#define AST_SYMBOL 		1
 
 typedef struct ast_node {
     int type;

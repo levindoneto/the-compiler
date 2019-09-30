@@ -1,6 +1,10 @@
 #ifndef HASHTABLE_HEADER
 #define HASHTABLE_HEADER
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #define NODE_NOT_FOUND -1 // when the node is not found withing the hashtable
 #define INIT_VALUE 0
 #define INIT_ADDRESS 1
@@ -8,7 +12,7 @@
 #define TEXT_SIZE 128
 #define HASHTABLE_SIZE 997 // prime number
 
-typedef struct HASHTABLE_NODE {
+typedef struct hashtable_node {
     char *value;
     int type;
     struct HASHTABLE_NODE *next;

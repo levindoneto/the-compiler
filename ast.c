@@ -1,7 +1,7 @@
 #include "ast.h"
 
-AST_NODE* astCreate(int type, HASHTABLE_NODE* symbol, AST_NODE* son0, AST_NODE* son1, AST_NODE* son2, AST_NODE* son3) {
-    AST_NODE* newNode = 0;
+AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3) {
+    AST* newNode = 0;
     newNode = (AST*) calloc(DEFAULT_N_OBJECTS, sizeof(AST)); // DEFAULT_N_OBJECTS from hash.h
     newNode->type = type;
     newNode->symbol = symbol;
@@ -10,18 +10,19 @@ AST_NODE* astCreate(int type, HASHTABLE_NODE* symbol, AST_NODE* son0, AST_NODE* 
     newNode->son[SON_TWO] = son2;
     newNode->son[SON_THREE] = son3;
 
-    return newnode;
+    return newNode;
 }
 
-void astPrint(AST_NODE *node, int level) {
+void astPrint(AST *node, int level) {
+    int i = 0;
     if(node == 0) {
         return;
     }
     fprintf(stderr, "AST(");
     switch (node->type) {
-        case '0': #TODO: ADD AST_LIT_INTEGER
+        case '0':// #TODO: ADD AST_LIT_INTEGER
             fprintf(stderr, "AST_LIT_INTEGER,");
-            break
+            break;
         default:
             break;
     }

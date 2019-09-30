@@ -1,17 +1,16 @@
-%{
-	#include <stdio.h>
-	#include <stdlib.h>
-	//#include "lex.yy.h"
+%{	
 	#include "ast.h"
-	#include "hash.h"
+	#include "hash.h"	
 	int getLineNumber(void);
-	//int yylex();
+	int yylex();
 	int yyerror(char*);
+
+	//AST* root = NULL;
 %}
 
-%union
-{
-	int value;
+%union {
+	struct hash_node* symbol;
+	struct ast_node* ast;
 }
 
 %token KW_BYTE
@@ -28,19 +27,24 @@
 %token KW_PRINT
 %token KW_RETURN
 %token KW_BREAK
+
 %token OPERATOR_LE
 %token OPERATOR_GE
 %token OPERATOR_EQ
 %token OPERATOR_DIF
-%token TOKEN_ERROR
-%token TK_IDENTIFIER
 
-%token<value> LIT_INTEGER
-%token<value> LIT_FLOAT
+%token TOKEN_ERROR
+
+%token<symbol> TK_IDENTIFIER
+
+%token<symbol> LIT_INTEGER
+%token<symbol> LIT_FLOAT
 %token LIT_TRUE
 %token LIT_FALSE
-%token LIT_CHAR
+%token<symbol> LIT_CHAR
 %token LIT_STRING
+
+
 
 %nonassoc JUSTIF
 %nonassoc KW_ELSE
@@ -82,8 +86,9 @@ vectorRemainder:	variableValue vectorRemainder
 	|
 	;
 
-variableValue:		LIT_INTEGER {fprintf(stderr, "INT_Id=%d\n", $1);}
-	|		LIT_FLOAT {fprintf(stderr, "FLOAT_Id=%d\n", $1);}
+// Literals
+variableValue:		LIT_INTEGER { $$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0); }
+	|		LIT_FLOAT
 	|		LIT_CHAR
 	|		booleanValue
 	;
