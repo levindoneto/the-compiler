@@ -1,19 +1,17 @@
-%{	
-	#include <stdlib.h>
+%{
 	#include <stdio.h>
-	#include <string.h>
-
+	#include <stdlib.h>
+	//#include "lex.yy.h"
 	#include "ast.h"
-	#include "hash.h"	
-
+	#include "hash.h"
 	int getLineNumber(void);
-	int yylex();
+	//int yylex();
 	int yyerror(char*);
 %}
 
-%union {
-	struct hash_node* symbol;
-	struct ast_node* ast;
+%union
+{
+	int value;
 }
 
 %token KW_BYTE
@@ -30,27 +28,19 @@
 %token KW_PRINT
 %token KW_RETURN
 %token KW_BREAK
-
 %token OPERATOR_LE
 %token OPERATOR_GE
 %token OPERATOR_EQ
 %token OPERATOR_DIF
-
 %token TOKEN_ERROR
+%token TK_IDENTIFIER
 
-%token<symbol> TK_IDENTIFIER
-%token<symbol> LIT_INTEGER
-%token<symbol> LIT_FLOAT
-%token<symbol> LIT_TRUE
-%token<symbol> LIT_FALSE
-%token<symbol> LIT_CHAR
-%token<symbol> LIT_STRING
-
-
-%type<ast> program
-%type<ast> declarationList
-%type<ast> declaration
-
+%token<value> LIT_INTEGER
+%token LIT_FLOAT
+%token LIT_TRUE
+%token LIT_FALSE
+%token LIT_CHAR
+%token LIT_STRING
 
 %nonassoc JUSTIF
 %nonassoc KW_ELSE
@@ -59,14 +49,9 @@
 %nonassoc ';'
 
 
-%left '*' '/'
-%left '-' '+'
-%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
-%left OPERATOR_OR OPERATOR_AND
-%right '!'
 
 %%
-program:		program declaration {$$ = $1;}
+program:		program declaration
 	|
 	;
 
@@ -75,7 +60,7 @@ declaration:		variableDeclaration
 	|		vectorDeclaration
         ;
 
-//		VARIABLE DECLARATION
+// VARIABLE DECLARATION
 variableDeclaration: variableType TK_IDENTIFIER	'=' variableValue ';'
         ;
 
@@ -97,14 +82,13 @@ vectorRemainder:	variableValue vectorRemainder
 	|
 	;
 
-// Literals
-variableValue:		LIT_INTEGER
+variableValue:		LIT_INTEGER {fprintf(stderr, "Id=%d\n", $1)}
 	|		LIT_FLOAT
 	|		LIT_CHAR
 	|		booleanValue
 	;
 
-//		FUNCTION DECLARATION
+// FUNCTION DECLARATION
 functionDeclaration: variableType TK_IDENTIFIER '(' paramList ')' '{' commandBlock '}'
         ;
 

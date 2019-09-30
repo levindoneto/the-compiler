@@ -15,11 +15,11 @@
 #define MAX_SONS 4
 
 // TODO: Define here the AST Symbols
-#define AST_SYMBOL 		1
+#define AST_SYMBOL 0
 
 typedef struct ast_node {
     int type;
-    HASHTABLE_NODE *symbol;
+    HASHTABLE_NODE* symbol;
     struct ast_node *son[MAX_SONS];
 } AST;
 
