@@ -74,7 +74,7 @@
 %left '-' '+'
 %left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
 %left OPERATOR_OR OPERATOR_AND
-%right '!'
+%right '~'
 
 %%
 program:		program declaration 			{$$ = $1;}
@@ -165,41 +165,39 @@ fluxControl:		KW_IF		'(' expression ')' KW_THEN command			{$$ = astCreate(AST_IF
 
 printValue:		expression printValue							{$$ = astCreate(AST_PRINTVALUE, 0, 0, 0, 0, 0);}
 	|		expression								{$$ = astCreate(AST_PRINTFINAL, 0, $1, 0, 0, 0);}
-	|		LIT_STRING								{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 //		EXPRESSIONS
-expression:		argument
-	|		TK_IDENTIFIER  '(' argList ')'
-	|		TK_IDENTIFIER  '[' expression ']'
-	|		'(' expression ')'
-	|		expression 		'+' 			expression
-	|		expression 		'-' 			expression
-	|		expression 		'*' 			expression
-	|		expression 		'/' 			expression
-	|		expression 		'<' 			expression
-	|		expression 		'>' 			expression
-	|		expression 		'.' 			expression
-	|		expression 		'v' 			expression
-	|		expression 		'~' 			expression
-	|		expression 		OPERATOR_LE 		expression
-	|		expression 		OPERATOR_GE 		expression
-	|		expression 		OPERATOR_EQ 		expression
-	|		expression 		OPERATOR_DIF	 	expression
+expression:		argument								{$$ = $1;}					
+	|		TK_IDENTIFIER  '(' argList ')'						{$$ = astCreate(AST_FUNCTIONCALL, $1, $3, 0, 0, 0);}
+	|		TK_IDENTIFIER  '[' expression ']'					{$$ = astCreate(AST_VECTORPOS, $1, $3, 0, 0, 0);}
+	|		'(' expression ')'							{$$ = astCreate(AST_PARENTHESIS, 0, $2, 0, 0, 0);}
+	|		expression 		'+' 			expression		{$$ = astCreate(AST_ADD, 0, $1, $3, 0, 0);}
+	|		expression 		'-' 			expression		{$$ = astCreate(AST_SUB, 0, $1, $3, 0, 0);}
+	|		expression 		'*' 			expression		{$$ = astCreate(AST_MUL, 0, $1, $3, 0, 0);}
+	|		expression 		'/' 			expression		{$$ = astCreate(AST_DIV, 0, $1, $3, 0, 0);}
+	|		expression 		'<' 			expression		{$$ = astCreate(AST_LESS, 0, $1, $3, 0, 0);}
+	|		expression 		'>' 			expression		{$$ = astCreate(AST_OVER, 0, $1, $3, 0, 0);}
+	|		expression 		'.' 			expression		{$$ = astCreate(AST_AND, 0, $1, $3, 0, 0);}
+	|		expression 		'v' 			expression		{$$ = astCreate(AST_OR, 0, $1, $3, 0, 0);}
+	|					'~' 			expression		{$$ = astCreate(AST_NOT, 0, $2, 0, 0, 0);}
+	|		expression 		OPERATOR_LE 		expression		{$$ = astCreate(AST_LE, 0, $1, $3, 0, 0);}
+	|		expression 		OPERATOR_GE 		expression		{$$ = astCreate(AST_GE, 0, $1, $3, 0, 0);}
+	|		expression 		OPERATOR_EQ 		expression		{$$ = astCreate(AST_EQ, 0, $1, $3, 0, 0);}
+	|		expression 		OPERATOR_DIF	 	expression		{$$ = astCreate(AST_DIFF, 0, $1, $3, 0, 0);}
 	;
 
-argList:		argument argRemainder
-	|
+argList:		argument argRemainder							{$$ = astCreate(AST_ARGLIST, 0, $1, $2, 0, 0);}
+	|											{$$ = 0;}
 	;
 
-argRemainder:		',' argument argRemainder
-	|
+argRemainder:		',' argument argRemainder						{$$ = astCreate(AST_ARGREMAINDER, 0, $2, $3, 0, 0);}
+	|											{$$ = 0;}
 	;
 
-argument:		TK_IDENTIFIER
-	|		LIT_FLOAT
-	|		LIT_INTEGER
-	|		LIT_CHAR
+argument:		TK_IDENTIFIER								{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+	|		variableValue								{$$ = $1;}
+	|		LIT_STRING								{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 %%
