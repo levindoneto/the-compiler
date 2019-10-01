@@ -84,3 +84,290 @@ void astPrint(AST *node, int level) {
         astPrint(node->son[i], level+1);
     }
 }
+
+void astMakeProgram(AST* node, FILE* fileOut) {
+	if(!node){
+        return;
+    }
+    switch(node->type){
+		case AST_DECLARATIONLIST:
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+		case AST_DECLARATION:
+			astMakeProgram(node->son[0], fileOut);
+			break;
+		case AST_VARIABLEDECLARATION:
+			astMakeProgram(node->son[0], fileOut);
+        	        fprintf(fileOut, "%s = ",node->symbol->symbol.text);
+			astMakeProgram(node->son[1], fileOut);
+            fprintf(fileOut, ";\n");
+			break;
+		case AST_VECTORDECLARATION:
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, "%s [ ",node->symbol->symbol.text);
+			astMakeProgram(node->son[1], fileOut);
+            fprintf(fileOut, "]");
+			astMakeProgram(node->son[2], fileOut);
+	       fprintf(fileOut, ";\n");
+		break;
+        case AST_SYMBOL:
+			fprintf(fileOut, "%s",node->symbol->symbol.text);
+			break;
+        case AST_BOOL:
+            fprintf(fileOut, "bool ");
+            break;
+        case AST_BYTE:
+            fprintf(fileOut, "byte ");
+            break;
+
+        case AST_INT:
+            fprintf(fileOut, "int ");
+            break;
+
+        case AST_LONG:
+            fprintf(fileOut, "long ");
+            break;
+
+        case AST_FLOAT:
+            fprintf(fileOut, "float ");
+            break;
+
+		case AST_VECTORVALUE:
+            fprintf(fileOut, ":");
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+			
+		case AST_VECTORREMAINDER:
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+
+		case AST_FUNCTIONDECLARATION:
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, "%s ( ",node->symbol->symbol.text);
+			astMakeProgram(node->son[1], fileOut);
+            fprintf(fileOut, ")");
+			astMakeProgram(node->son[2], fileOut);
+            fprintf(fileOut, ";\n");
+			break;
+
+		case AST_PARAMLIST:
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+			
+		case AST_REMAINDER:
+            fprintf(fileOut, ",");
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+			
+		case AST_PARAM:
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, "%s",node->symbol->symbol.text);
+			break;
+
+		case AST_COMMANDBLOCK:
+            fprintf(fileOut, "{ \n";
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+            fprintf(fileOut, " }\n");
+			break;
+
+		case AST_COMMANDREMAINDER:
+			fprintf(fileOut, " ;\n");
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+
+		case AST_ATTR:
+            fprintf(fileOut, "%s",node->symbol->symbol.text);
+            fprintf(fileOut, " = ";
+			astMakeProgram(node->son[0], fileOut);
+			break;
+
+		case AST_VECTORATTR:
+            fprintf(fileOut, "%s",node->symbol->symbol.text);
+            fprintf(fileOut, " [";
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, "] = ";
+			astMakeProgram(node->son[1], fileOut);
+			break;
+
+        case AST_READ:
+            fprintf(fileOut, "read  %s",node->symbol->symbol.text);
+            break;
+
+        case AST_PRINT:
+            fprintf(fileOut, "print");
+			astMakeProgram(node->son[0], fileOut);
+            break;
+
+        case AST_RETURN:
+            fprintf(fileOut, "return");
+			astMakeProgram(node->son[0], fileOut);
+            break;
+
+        case AST_FLUXCONTROL:
+			astMakeProgram(node->son[0], fileOut);
+            break;
+
+        case AST_COMMANDBLOCK:
+			astMakeProgram(node->son[0], fileOut);
+            break;
+
+		case AST_IFTHEN:
+            fprintf(fileOut, "if ( ");
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " ) then ");
+			astMakeProgram(node->son[1], fileOut);
+			break;
+
+		case AST_IFTHENELSE:
+            fprintf(fileOut, "if ( ");
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " ) then ");
+			astMakeProgram(node->son[1], fileOut);
+            fprintf(fileOut, " else ");
+			astMakeProgram(node->son[3], fileOut);
+			break;
+
+		case AST_WHILE:
+            fprintf(fileOut, "while ( ");
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " ) ");
+			astMakeProgram(node->son[1], fileOut);
+			break;
+
+		case AST_FOR:
+            fprintf(fileOut, "for ( %s : ", node->symbol->symbol.text);
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " , ");
+			astMakeProgram(node->son[1], fileOut);
+            fprintf(fileOut, " , ");
+			astMakeProgram(node->son[2], fileOut);
+            fprintf(fileOut, " ) ");
+			astMakeProgram(node->son[3], fileOut);
+			break;
+
+		case AST_BREAK:
+            fprintf(fileOut, "break");
+			break;
+
+		case AST_PRINTVALUE:
+			astMakeProgram(node->son[0], fileOut);
+			astMakeProgram(node->son[1], fileOut);
+			break;
+
+		case AST_PRINTFINAL:
+			astMakeProgram(node->son[0], fileOut);
+			break;
+
+		case AST_FUNCTIONCALL:
+            fprintf(fileOut, " %s ( ", node->symbol->symbol.text);
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " ) ");
+
+		case AST_VECTORPOS:
+            fprintf(fileOut, " %s [ ", node->symbol->symbol.text);
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " ] ");
+			break;
+
+		case AST_PARENTHESIS:
+            fprintf(fileOut, " ( ");
+			astMakeProgram(node->son[0], fileOut);
+            fprintf(fileOut, " ) ");
+		
+        case AST_ADD:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " + ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_SUB:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " - ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_MUL:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " * ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_DIV:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " / ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_LESS:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " < ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_GREATER:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " > ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_AND:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " . ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_OR:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " V ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_NOT:
+            fprintf(output, "~ ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_LE:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " <= ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_GE:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " >= ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case OPERATOR_EQ:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " == ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case OPERATOR_DIF:
+            astMakeProgram(node->son[0],fileOut);
+            fprintf(output, " != ");
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_ARGLIST:
+            astMakeProgram(node->son[0],fileOut);
+            astMakeProgram(node->son[1],fileOut);
+            break;
+		
+        case AST_ARGREMAINDER:
+            fprintf(output, " , ");
+            astMakeProgram(node->son[0],fileOut);
+            astMakeProgram(node->son[1],fileOut);
+            break;
+            
+    }
+}
