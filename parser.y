@@ -142,7 +142,7 @@ param:			variableType TK_IDENTIFIER		{$$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0)
 commandBlock:		'{' command commandRemainder '}'	{$$ = astCreate(AST_COMMANDBLOCK, 0, $2, $3, 0, 0);}
 	;
 
-commandRemainder:	command	';' commandRemainder		{$$ = astCreate(AST_COMMANDREMAINDER, 0, $1, $3, 0, 0);}
+commandRemainder:	';' command commandRemainder		{$$ = astCreate(AST_COMMANDREMAINDER, 0, $2, $3, 0, 0);}
 	|							{$$ = 0;}
 	;
 
