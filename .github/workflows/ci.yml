@@ -15,9 +15,5 @@ jobs:
       run: make
     - name: test1
       run: |
-        ./etapa3 tests/stage3/input.txt
-        echo $?
-        if [ $? -eq 0 ]
-        then
-          echo "SUCCESS"
-        fi
+        ./etapa3 tests/stage3/input.txt output.txt
+        cat output.txt
