@@ -50,8 +50,8 @@ void showToken(int tok) {
 int main(int argc, char ** argv) {
 	int tok;
 	int parsingResult;
-	if (argc < 2) {
-		fprintf(stderr, "Call: a.out file_name\n");
+	if (argc < 3) {
+		fprintf(stderr, "Call: ./etapa3 <IN> <OUT>\n");
 		exit(1);
 	}
 	if ((yyin = fopen(argv[1], "r")) == 0) {
@@ -60,9 +60,16 @@ int main(int argc, char ** argv) {
 	}
 	initMe(); // init hashtable structure
 	parsingResult = yyparse(); // Check if the content belongs to break192
+	FILE* output = fopen(argv[2], "w+");
+	if(output == NULL){
+        	fprintf(stderr, "%s", "Can't open output file. \n");
+		exit(2);
+	}
 	if(parsingResult == 0) {
-        	fprintf(stderr, "Code accepted regarding the grammar\n");
+		fprintf(stderr, "Code accepted regarding the grammar\n");
 	        hashPrint(); // print the whole structuring after parsing it
+		astMakeProgram(ast, output);
+		fclose(output);
 	        exit(0); // 0: for file alright
     	}  else {
        		fprintf(stderr, "Error parsing the code on line %d\n", getLineNumber());

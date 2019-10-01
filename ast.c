@@ -99,20 +99,20 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 			break;
 		case AST_VARIABLEDECLARATION:
 			astMakeProgram(node->son[0], fileOut);
-        	        fprintf(fileOut, "%s = ",node->symbol->symbol.text);
+        	        fprintf(fileOut, "%s = ",node->symbol->value);
 			astMakeProgram(node->son[1], fileOut);
             fprintf(fileOut, ";\n");
 			break;
 		case AST_VECTORDECLARATION:
 			astMakeProgram(node->son[0], fileOut);
-            fprintf(fileOut, "%s [ ",node->symbol->symbol.text);
+            fprintf(fileOut, "%s [ ",node->symbol->value);
 			astMakeProgram(node->son[1], fileOut);
             fprintf(fileOut, "]");
 			astMakeProgram(node->son[2], fileOut);
 	       fprintf(fileOut, ";\n");
 		break;
         case AST_SYMBOL:
-			fprintf(fileOut, "%s",node->symbol->symbol.text);
+			fprintf(fileOut, "%s",node->symbol->value);
 			break;
         case AST_BOOL:
             fprintf(fileOut, "bool ");
@@ -146,7 +146,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 
 		case AST_FUNCTIONDECLARATION:
 			astMakeProgram(node->son[0], fileOut);
-            fprintf(fileOut, "%s ( ",node->symbol->symbol.text);
+            fprintf(fileOut, "%s ( ",node->symbol->value);
 			astMakeProgram(node->son[1], fileOut);
             fprintf(fileOut, ")");
 			astMakeProgram(node->son[2], fileOut);
@@ -166,11 +166,11 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 			
 		case AST_PARAM:
 			astMakeProgram(node->son[0], fileOut);
-            fprintf(fileOut, "%s",node->symbol->symbol.text);
+            fprintf(fileOut, "%s",node->symbol->value);
 			break;
 
 		case AST_COMMANDBLOCK:
-            fprintf(fileOut, "{ \n";
+            fprintf(fileOut, "{ \n");
 			astMakeProgram(node->son[0], fileOut);
 			astMakeProgram(node->son[1], fileOut);
             fprintf(fileOut, " }\n");
@@ -183,21 +183,21 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 			break;
 
 		case AST_ATTR:
-            fprintf(fileOut, "%s",node->symbol->symbol.text);
-            fprintf(fileOut, " = ";
+            fprintf(fileOut, "%s",node->symbol->value);
+            fprintf(fileOut, " = ");
 			astMakeProgram(node->son[0], fileOut);
 			break;
 
 		case AST_VECTORATTR:
-            fprintf(fileOut, "%s",node->symbol->symbol.text);
-            fprintf(fileOut, " [";
+            fprintf(fileOut, "%s",node->symbol->value);
+            fprintf(fileOut, " [");
 			astMakeProgram(node->son[0], fileOut);
-            fprintf(fileOut, "] = ";
+            fprintf(fileOut, "] = ");
 			astMakeProgram(node->son[1], fileOut);
 			break;
 
         case AST_READ:
-            fprintf(fileOut, "read  %s",node->symbol->symbol.text);
+            fprintf(fileOut, "read  %s",node->symbol->value);
             break;
 
         case AST_PRINT:
@@ -211,10 +211,6 @@ void astMakeProgram(AST* node, FILE* fileOut) {
             break;
 
         case AST_FLUXCONTROL:
-			astMakeProgram(node->son[0], fileOut);
-            break;
-
-        case AST_COMMANDBLOCK:
 			astMakeProgram(node->son[0], fileOut);
             break;
 
@@ -242,7 +238,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 			break;
 
 		case AST_FOR:
-            fprintf(fileOut, "for ( %s : ", node->symbol->symbol.text);
+            fprintf(fileOut, "for ( %s : ", node->symbol->value);
 			astMakeProgram(node->son[0], fileOut);
             fprintf(fileOut, " , ");
 			astMakeProgram(node->son[1], fileOut);
@@ -266,12 +262,12 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 			break;
 
 		case AST_FUNCTIONCALL:
-            fprintf(fileOut, " %s ( ", node->symbol->symbol.text);
+            fprintf(fileOut, " %s ( ", node->symbol->value);
 			astMakeProgram(node->son[0], fileOut);
             fprintf(fileOut, " ) ");
 
 		case AST_VECTORPOS:
-            fprintf(fileOut, " %s [ ", node->symbol->symbol.text);
+            fprintf(fileOut, " %s [ ", node->symbol->value);
 			astMakeProgram(node->son[0], fileOut);
             fprintf(fileOut, " ] ");
 			break;
@@ -283,78 +279,78 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 		
         case AST_ADD:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " + ");
+            fprintf(fileOut, " + ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_SUB:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " - ");
+            fprintf(fileOut, " - ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_MUL:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " * ");
+            fprintf(fileOut, " * ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_DIV:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " / ");
+            fprintf(fileOut, " / ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_LESS:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " < ");
+            fprintf(fileOut, " < ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_GREATER:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " > ");
+            fprintf(fileOut, " > ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_AND:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " . ");
+            fprintf(fileOut, " . ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_OR:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " V ");
+            fprintf(fileOut, " V ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_NOT:
-            fprintf(output, "~ ");
+            fprintf(fileOut, "~ ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_LE:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " <= ");
+            fprintf(fileOut, " <= ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
         case AST_GE:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " >= ");
+            fprintf(fileOut, " >= ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
-        case OPERATOR_EQ:
+        case AST_EQ:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " == ");
+            fprintf(fileOut, " == ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
-        case OPERATOR_DIF:
+        case AST_DIFF:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(output, " != ");
+            fprintf(fileOut, " != ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		
@@ -364,10 +360,11 @@ void astMakeProgram(AST* node, FILE* fileOut) {
             break;
 		
         case AST_ARGREMAINDER:
-            fprintf(output, " , ");
+            fprintf(fileOut, " , ");
             astMakeProgram(node->son[0],fileOut);
             astMakeProgram(node->son[1],fileOut);
             break;
+	default: break;
             
     }
 }

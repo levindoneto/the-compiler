@@ -82,6 +82,8 @@ typedef struct ast_node {
     struct ast_node *son[MAX_SONS];
 } AST;
 
+AST* ast; // used for making program
+
 /* Function for creating a node in the tree.
  * @param {int} type.
  * @param {HASH_NODE*} type.
