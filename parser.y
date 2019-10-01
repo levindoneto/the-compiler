@@ -82,7 +82,7 @@
 program:		declarationList 			{$$ = $1; astPrint($$, 0);}
 	;
 
-declarationList:	declaration declarationList		{$$ = astCreate(AST_DECLARATION, 0, $1, $2, 0, 0);}
+declarationList:	declaration declarationList		{$$ = astCreate(AST_DECLARATIONLIST, 0, $1, $2, 0, 0);}
 	|							{$$ = 0;}
 	;
 
@@ -169,7 +169,7 @@ fluxControl:		KW_IF		'(' expression ')' KW_THEN command			{$$ = astCreate(AST_IF
 	;
 
 printValue:		expression printValue							{$$ = astCreate(AST_PRINTVALUE, 0, $1, $2, 0, 0);}
-	|											{$$ = 0;}
+	|		expression								{$$ = astCreate(AST_PRINTFINAL, 0, $1, 0, 0, 0);}
 	;
 
 //		EXPRESSIONS
