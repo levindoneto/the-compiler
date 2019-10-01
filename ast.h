@@ -54,6 +54,28 @@
 #define AST_PRINTVALUE 28
 #define AST_PRINTFINAL 29
 
+// expression
+#define AST_FUNCTIONCALL 30
+#define AST_VECTORPOS 31
+#define AST_PARENTHESIS 32
+#define AST_ADD 33
+#define AST_SUB 34
+#define AST_MUL 35
+#define AST_DIV 36
+#define AST_LESS 37
+#define AST_GREATER 38
+#define AST_AND 39
+#define AST_OR 40
+#define AST_NOT 41
+#define AST_LE 42
+#define AST_GE 43
+#define AST_EQ 44
+#define AST_DIFF 45
+
+#define AST_ARGLIST 46
+#define AST_ARGREMAINDER 47
+
+
 typedef struct ast_node {
     int type;
     HASHTABLE_NODE* symbol;
