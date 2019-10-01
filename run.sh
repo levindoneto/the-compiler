@@ -2,4 +2,5 @@
 
 make clean
 make
-./etapa2 tests/stage2/input_right.txt
+./etapa3 tests/stage2/test_simple.txt out.txt
+
