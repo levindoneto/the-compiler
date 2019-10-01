@@ -34,16 +34,16 @@ BAS [a-zA-Z_]
 "return"				{return KW_RETURN;}
 "break"					{return KW_BREAK;}
 
-{NMR}+					{hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
-({NMR}+\.{NMR}*|{NMR}*\.{NMR}+)		{hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT;}
-['].[']					{hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
-["](\\\"|[^\"\n])*["]			{hashInsert(yytext, LIT_STRING); return LIT_STRING;}
-"TRUE"					{hashInsert(yytext, LIT_TRUE); return LIT_TRUE;}
-"FALSE"					{hashInsert(yytext, LIT_FALSE); return LIT_FALSE;}
+{NMR}+					{yylval.symbol = hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
+({NMR}+\.{NMR}*|{NMR}*\.{NMR}+)		{yylval.symbol = hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT;}
+['].[']					{yylval.symbol = hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
+["](\\\"|[^\"\n])*["]			{yylval.symbol = hashInsert(yytext, LIT_STRING); return LIT_STRING;}
+"TRUE"					{yylval.symbol = hashInsert(yytext, LIT_TRUE); return LIT_TRUE;}
+"FALSE"					{yylval.symbol = hashInsert(yytext, LIT_FALSE); return LIT_FALSE;}
 
 [,;:\(\)\[\]\{\}\+\-*/<>=v\.~&$#]	{return yytext[0];}
 
-{BAS}[a-zA-Z_0-9]*			{hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
+{BAS}[a-zA-Z_0-9]*			{yylval.symbol = hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
 
 ">="					{return OPERATOR_GE;}
 "<="					{return OPERATOR_LE;}
