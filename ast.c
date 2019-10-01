@@ -112,7 +112,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 	       fprintf(fileOut, ";\n");
 		break;
         case AST_SYMBOL:
-			fprintf(fileOut, "%s",node->symbol->value);
+			fprintf(fileOut, " %s ",node->symbol->value);
 			break;
         case AST_BOOL:
             fprintf(fileOut, "bool ");
@@ -150,7 +150,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 			astMakeProgram(node->son[1], fileOut);
             fprintf(fileOut, ")");
 			astMakeProgram(node->son[2], fileOut);
-            fprintf(fileOut, ";\n");
+            fprintf(fileOut, "\n");
 			break;
 
 		case AST_PARAMLIST:
@@ -265,6 +265,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
             fprintf(fileOut, " %s ( ", node->symbol->value);
 			astMakeProgram(node->son[0], fileOut);
             fprintf(fileOut, " ) ");
+			break;
 
 		case AST_VECTORPOS:
             fprintf(fileOut, " %s [ ", node->symbol->value);
@@ -321,7 +322,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
 		
         case AST_OR:
             astMakeProgram(node->son[0],fileOut);
-            fprintf(fileOut, " V ");
+            fprintf(fileOut, " v ");
             astMakeProgram(node->son[1],fileOut);
             break;
 		

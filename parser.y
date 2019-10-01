@@ -153,7 +153,7 @@ command:		TK_IDENTIFIER '=' expression			{$$ = astCreate(AST_ATTR, $1, $3, 0, 0,
 	|		KW_PRINT  printValue 				{$$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0);}
 	|		KW_RETURN expression 				{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
 	|		fluxControl 					{$$ = astCreate(AST_FLUXCONTROL, 0, $1, 0, 0, 0);}
-	|		commandBlock 					{$$ = astCreate(AST_COMMANDBLOCK, 0, $1, 0, 0, 0);}
+	|		commandBlock 					{$$ = $1;}
 	|								{$$ = 0;}
         ;
 
