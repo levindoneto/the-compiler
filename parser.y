@@ -3,8 +3,7 @@
 	#include <stdio.h>
 	#include <string.h>
 
-	#include "ast.h"
-	#include "hash.h"	
+	#include "ast.h"	
 
 	int getLineNumber(void);
 	int yylex();
@@ -52,6 +51,7 @@
 %type <ast> variableDeclaration
 %type <ast> functionDeclaration
 %type <ast> vectorDeclaration
+%type <ast> vectorSize
 %type <ast> variableType
 %type <ast> variableValue
 %type <ast> vectorValue
@@ -76,61 +76,64 @@
 %right '!'
 
 %%
-program:		program declaration {$$ = $1}
-	|
+program:		program declaration 			{$$ = $1;}
+	|							{$$ = 0;}
 	;
 
-declaration:		variableDeclaration {$$ = }
-	|		functionDeclaration
-	|		vectorDeclaration
+declaration:		variableDeclaration 			{$$ = astCreate{AST_DECLARATION, 0, $1, 0, 0, 0};}
+	|		functionDeclaration			{$$ = astCreate{AST_DECLARATION, 0, $1, 0, 0, 0};}
+	|		vectorDeclaration			{$$ = astCreate{AST_DECLARATION, 0, $1, 0, 0, 0};}
         ;
 
 //		VARIABLE DECLARATION
-variableDeclaration: 	variableType TK_IDENTIFIER	'=' variableValue ';'
+variableDeclaration: 	variableType TK_IDENTIFIER	'=' variableValue ';'		{$$ = astCreate{AST_VARIABLEDECLARATION, $2, $1, $4, 0, 0};}
         ;
 
-vectorDeclaration:	variableType TK_IDENTIFIER '[' LIT_INTEGER ']' vectorValue ';'
+vectorDeclaration:	variableType TK_IDENTIFIER '[' vectorSize ']' vectorValue ';' 	{$$ = astCreate{AST_VECTORDECLARATION, $2, $1, $4, $6, 0};}
 	;
 
-variableType:		KW_BOOL
-	|		KW_BYTE
-	|		KW_INT
-	|		KW_LONG
-	|		KW_FLOAT
+vectorSize:		LIT_INTEGER 				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
-vectorValue:		':' variableValue vectorRemainder
-	|		
+variableType:		KW_BOOL					{$$ = astCreate{AST_BOOL, 0, 0, 0, 0, 0};}
+	|		KW_BYTE					{$$ = astCreate{AST_BYTE, 0, 0, 0, 0, 0};}
+	|		KW_INT					{$$ = astCreate{AST_INT, 0, 0, 0, 0, 0};}
+	|		KW_LONG					{$$ = astCreate{AST_LONG, 0, 0, 0, 0, 0};}
+	|		KW_FLOAT				{$$ = astCreate{AST_FLOAT, 0, 0, 0, 0, 0};}
 	;
 
-vectorRemainder:	variableValue vectorRemainder
-	|
+vectorValue:		':' variableValue vectorRemainder 	{$$ = astCreate{AST_VECTORVALUE, 0, $2, $3, 0, 0};}
+	|							{$$ = 0;}
 	;
 
-variableValue:		LIT_INTEGER {fprintf(stderr, "INT_Id=%d\n", $1);}
-	|		LIT_FLOAT {fprintf(stderr, "FLOAT_Id=%d\n", $1);}
-	|		LIT_CHAR
-	|		LIT_TRUE
-	|		LIT_FALSE
+vectorRemainder:	variableValue vectorRemainder 		{$$ = astCreate{AST_VECTORREMAINDER, 0, $1, $2, 0, 0};}
+	|							{$$ = 0;}
+	;
+
+variableValue:		LIT_INTEGER 				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+	|		LIT_FLOAT 				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+	|		LIT_CHAR				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+	|		LIT_TRUE				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
+	|		LIT_FALSE				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 //		FUNCTION DECLARATION
-functionDeclaration: 	variableType TK_IDENTIFIER '(' paramList ')' commandBlock
+functionDeclaration: 	variableType TK_IDENTIFIER '(' paramList ')' commandBlock {$$ = astCreate(AST_FUNCTIONDECLARATION, $2, $1, $4, $6, 0);}
         ;
 
-paramList:		param remainder
-	|
+paramList:		param remainder				{$$ = astCreate(AST_PARAMLIST, 0, $1, $2, 0, 0);}
+	|							{$$=0;}
 	;
 
-remainder:		',' param remainder
-	|
+remainder:		',' param remainder			{$$ = astCreate(AST_REMAINDER, 0, $2, $3, 0, 0);}
+	|							{$$=0;}
 	;
 
-param:			variableType TK_IDENTIFIER
+param:			variableType TK_IDENTIFIER		{$$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0);}
 	;
 
 // COMMAND BLOCK
-commandBlock:		'{' command commandRemainder '}'
+commandBlock:		'{' command commandRemainder '}'	{$$ = astCreate(AST_COMMANDBLOCK, 0, $2, $3, 0, 0);}
 	;
 
 commandRemainder:	command	';' commandRemainder
