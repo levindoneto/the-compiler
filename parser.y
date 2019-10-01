@@ -55,6 +55,7 @@
 %type <ast> variableType
 %type <ast> variableValue
 %type <ast> vectorValue
+%type <ast> vectorRemainder
 %type <ast> paramList
 %type <ast> remainder
 %type <ast> param
@@ -136,34 +137,35 @@ param:			variableType TK_IDENTIFIER		{$$ = astCreate(AST_PARAM, $2, $1, 0, 0, 0)
 commandBlock:		'{' command commandRemainder '}'	{$$ = astCreate(AST_COMMANDBLOCK, 0, $2, $3, 0, 0);}
 	;
 
-commandRemainder:	command	';' commandRemainder
-	|
+commandRemainder:	command	';' commandRemainder		{$$ = astCreate(AST_COMMANDREMAINDER, 0, $1, $3, 0, 0);}
+	|							{$$ = 0;}
 	;
 
 
-command:		TK_IDENTIFIER '=' expression
-	|		TK_IDENTIFIER '[' expression ']' '=' expression 
-	|		KW_READ	  TK_IDENTIFIER 
-	|		KW_PRINT  printValue 
-	|		KW_RETURN expression 
-	|		fluxControl 
-	|		commandBlock 
+command:		TK_IDENTIFIER '=' expression			{$$ = astCreate(AST_ATTR, $1, $3, 0, 0, 0);}
+	|		TK_IDENTIFIER '[' expression ']' '=' expression {$$ = astCreate(AST_VECTORATTR, $1, $3, $6, 0, 0);}
+	|		KW_READ	  TK_IDENTIFIER 			{$$ = astCreate(AST_READ, $2, 0, 0, 0, 0);}
+	|		KW_PRINT  printValue 				{$$ = astCreate(AST_PRINT, 0, $2, 0, 0, 0);}
+	|		KW_RETURN expression 				{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
+	|		fluxControl 					{$$ = astCreate(AST_FLUXCONTROL, 0, $1, 0, 0, 0);}
+	|		commandBlock 					{$$ = astCreate(AST_COMMANDBLOCK, 0, $1, 0, 0, 0);}
 	|
         ;
 
 
 
 //		COMMANDS
-fluxControl:		KW_IF		'(' expression ')' KW_THEN command
-	|		KW_IF		'(' expression ')' KW_THEN command KW_ELSE command
-	|		KW_WHILE	'(' expression ')' command 
+fluxControl:		KW_IF		'(' expression ')' KW_THEN command			{$$ = astCreate(AST_IFTHEN, 0, $3, $6, 0, 0);}	
+	|		KW_IF		'(' expression ')' KW_THEN command KW_ELSE command 	{$$ = astCreate(AST_IFTHENELSE, 0, $3, $6, $8, 0);}
+	|		KW_WHILE	'(' expression ')' command 				{$$ = astCreate(AST_WHILE, 0, $3, $5, 0, 0);}
 	|		KW_FOR		'(' TK_IDENTIFIER ':' expression ',' expression ',' expression ')' command
-	|		KW_BREAK
+												{$$ = astCreate(AST_FOR, $3, $5, $7, $9, $11);}
+	|		KW_BREAK								{$$ = astCreate(AST_BREAK, 0, 0, 0, 0, 0);}
 	;
 
-printValue:		expression printValue
-	|		expression
-	|		LIT_STRING
+printValue:		expression printValue							{$$ = astCreate(AST_PRINTVALUE, 0, 0, 0, 0, 0);}
+	|		expression								{$$ = astCreate(AST_PRINTFINAL, 0, $1, 0, 0, 0);}
+	|		LIT_STRING								{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 //		EXPRESSIONS
