@@ -20,7 +20,7 @@ void astPrint(AST *node, int level) {
     }
     // identation
     for(i = 0; i < level; i++) {
-    	fprintf(stderr, "\t");
+    	fprintf(stderr, "__");
     }
     switch (node->type) {
         case AST_SYMBOL: fprintf(stderr, "AST_SYMBOL"); break;

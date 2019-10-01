@@ -15,7 +15,7 @@ jobs:
       run: make
     - name: test1
       run: |
-        ./etapa3 tests/stage3/input.txt
+        ./etapa3 tests/stage2/sample2.txt
         echo $?
         if [ $? -eq 0 ]
         then
