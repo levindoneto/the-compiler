@@ -1,18 +1,19 @@
 %{	
 	#include <stdlib.h>
 	#include <stdio.h>
-	#include <string.h>
-
 	#include "ast.h"	
 
 	int getLineNumber(void);
 	int yylex();
-	int yyerror(char*);
+	int yyerror(char *msg);
+
+
+
 %}
 
 %union {
-	struct hash_node* symbol;
-	struct ast_node* ast;
+	struct hashtable_node *symbol;
+	struct ast_node *ast;
 } 
 
 %token KW_BYTE
@@ -47,6 +48,7 @@
 
 
 %type <ast> program
+%type <ast> declarationList
 %type <ast> declaration
 %type <ast> variableDeclaration
 %type <ast> functionDeclaration
@@ -70,44 +72,47 @@
 %type <ast> argument
 
 
+%right '='
+%left '+' '-'
 %left '*' '/'
-%left '-' '+'
-%left '<' '>' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
-%left OPERATOR_OR OPERATOR_AND
-%right '~'
+%left '<' '>' OPERATOR_EQ OPERATOR_DIF OPERATOR_GE OPERATOR_LE
+%left '.' 'v'
 
 %%
-program:		program declaration 			{$$ = $1;}
+program:		declarationList 			{$$ = $1;}
+	;
+
+declarationList:	declaration declarationList		{$$ = astCreate(AST_DECLARATION, 0, $1, $2, 0, 0);}
 	|							{$$ = 0;}
 	;
 
-declaration:		variableDeclaration 			{$$ = astCreate{AST_DECLARATION, 0, $1, 0, 0, 0};}
-	|		functionDeclaration			{$$ = astCreate{AST_DECLARATION, 0, $1, 0, 0, 0};}
-	|		vectorDeclaration			{$$ = astCreate{AST_DECLARATION, 0, $1, 0, 0, 0};}
+declaration:		variableDeclaration 			{$$ = astCreate(AST_DECLARATION, 0, $1, 0, 0, 0);}
+	|		functionDeclaration			{$$ = astCreate(AST_DECLARATION, 0, $1, 0, 0, 0);}
+	|		vectorDeclaration			{$$ = astCreate(AST_DECLARATION, 0, $1, 0, 0, 0);}
         ;
 
 //		VARIABLE DECLARATION
-variableDeclaration: 	variableType TK_IDENTIFIER	'=' variableValue ';'		{$$ = astCreate{AST_VARIABLEDECLARATION, $2, $1, $4, 0, 0};}
+variableDeclaration: 	variableType TK_IDENTIFIER	'=' variableValue ';'		{$$ = astCreate(AST_VARIABLEDECLARATION, $2, $1, $4, 0, 0);}
         ;
 
-vectorDeclaration:	variableType TK_IDENTIFIER '[' vectorSize ']' vectorValue ';' 	{$$ = astCreate{AST_VECTORDECLARATION, $2, $1, $4, $6, 0};}
+vectorDeclaration:	variableType TK_IDENTIFIER '[' vectorSize ']' vectorValue ';' 	{$$ = astCreate(AST_VECTORDECLARATION, $2, $1, $4, $6, 0);}
 	;
 
 vectorSize:		LIT_INTEGER 				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
-variableType:		KW_BOOL					{$$ = astCreate{AST_BOOL, 0, 0, 0, 0, 0};}
-	|		KW_BYTE					{$$ = astCreate{AST_BYTE, 0, 0, 0, 0, 0};}
-	|		KW_INT					{$$ = astCreate{AST_INT, 0, 0, 0, 0, 0};}
-	|		KW_LONG					{$$ = astCreate{AST_LONG, 0, 0, 0, 0, 0};}
-	|		KW_FLOAT				{$$ = astCreate{AST_FLOAT, 0, 0, 0, 0, 0};}
+variableType:		KW_BOOL					{$$ = astCreate(AST_BOOL, 0, 0, 0, 0, 0);}
+	|		KW_BYTE					{$$ = astCreate(AST_BYTE, 0, 0, 0, 0, 0);}
+	|		KW_INT					{$$ = astCreate(AST_INT, 0, 0, 0, 0, 0);}
+	|		KW_LONG					{$$ = astCreate(AST_LONG, 0, 0, 0, 0, 0);}
+	|		KW_FLOAT				{$$ = astCreate(AST_FLOAT, 0, 0, 0, 0, 0);}
 	;
 
-vectorValue:		':' variableValue vectorRemainder 	{$$ = astCreate{AST_VECTORVALUE, 0, $2, $3, 0, 0};}
+vectorValue:		':' variableValue vectorRemainder 	{$$ = astCreate(AST_VECTORVALUE, 0, $2, $3, 0, 0);}
 	|							{$$ = 0;}
 	;
 
-vectorRemainder:	variableValue vectorRemainder 		{$$ = astCreate{AST_VECTORREMAINDER, 0, $1, $2, 0, 0};}
+vectorRemainder:	variableValue vectorRemainder 		{$$ = astCreate(AST_VECTORREMAINDER, 0, $1, $2, 0, 0);}
 	|							{$$ = 0;}
 	;
 
@@ -149,7 +154,7 @@ command:		TK_IDENTIFIER '=' expression			{$$ = astCreate(AST_ATTR, $1, $3, 0, 0,
 	|		KW_RETURN expression 				{$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
 	|		fluxControl 					{$$ = astCreate(AST_FLUXCONTROL, 0, $1, 0, 0, 0);}
 	|		commandBlock 					{$$ = astCreate(AST_COMMANDBLOCK, 0, $1, 0, 0, 0);}
-	|
+	|								{$$ = 0;}
         ;
 
 
@@ -163,8 +168,8 @@ fluxControl:		KW_IF		'(' expression ')' KW_THEN command			{$$ = astCreate(AST_IF
 	|		KW_BREAK								{$$ = astCreate(AST_BREAK, 0, 0, 0, 0, 0);}
 	;
 
-printValue:		expression printValue							{$$ = astCreate(AST_PRINTVALUE, 0, 0, 0, 0, 0);}
-	|		expression								{$$ = astCreate(AST_PRINTFINAL, 0, $1, 0, 0, 0);}
+printValue:		expression printValue							{$$ = astCreate(AST_PRINTVALUE, 0, $1, $2, 0, 0);}
+	|											{$$ = 0;}
 	;
 
 //		EXPRESSIONS
@@ -177,7 +182,7 @@ expression:		argument								{$$ = $1;}
 	|		expression 		'*' 			expression		{$$ = astCreate(AST_MUL, 0, $1, $3, 0, 0);}
 	|		expression 		'/' 			expression		{$$ = astCreate(AST_DIV, 0, $1, $3, 0, 0);}
 	|		expression 		'<' 			expression		{$$ = astCreate(AST_LESS, 0, $1, $3, 0, 0);}
-	|		expression 		'>' 			expression		{$$ = astCreate(AST_OVER, 0, $1, $3, 0, 0);}
+	|		expression 		'>' 			expression		{$$ = astCreate(AST_GREATER, 0, $1, $3, 0, 0);}
 	|		expression 		'.' 			expression		{$$ = astCreate(AST_AND, 0, $1, $3, 0, 0);}
 	|		expression 		'v' 			expression		{$$ = astCreate(AST_OR, 0, $1, $3, 0, 0);}
 	|					'~' 			expression		{$$ = astCreate(AST_NOT, 0, $2, 0, 0, 0);}
