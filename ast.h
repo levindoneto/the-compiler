@@ -74,7 +74,7 @@
 
 #define AST_ARGLIST 46
 #define AST_ARGREMAINDER 47
-
+#define AST_DECLARATIONLIST 48
 
 typedef struct ast_node {
     int type;

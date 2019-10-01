@@ -70,10 +70,7 @@ extern int yydebug;
     LIT_TRUE = 280,
     LIT_FALSE = 281,
     LIT_CHAR = 282,
-    LIT_STRING = 283,
-    OPERATOR_NE = 284,
-    OPERATOR_OR = 285,
-    OPERATOR_AND = 286
+    LIT_STRING = 283
   };
 #endif
 /* Tokens.  */
@@ -103,21 +100,18 @@ extern int yydebug;
 #define LIT_FALSE 281
 #define LIT_CHAR 282
 #define LIT_STRING 283
-#define OPERATOR_NE 284
-#define OPERATOR_OR 285
-#define OPERATOR_AND 286
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 13 "parser.y" /* yacc.c:1909  */
+#line 14 "parser.y" /* yacc.c:1909  */
 
-	struct hash_node* symbol;
-	struct ast_node* ast;
+	struct hashtable_node *symbol;
+	struct ast_node *ast;
 
-#line 121 "y.tab.h" /* yacc.c:1909  */
+#line 115 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
