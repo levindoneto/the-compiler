@@ -79,7 +79,7 @@
 %left '.' 'v'
 
 %%
-program:		declarationList 			{$$ = $1; astPrint($$, 0);}
+program:		declarationList 			{$$ = $1; ast = $$; astPrint($$, 0);}
 	;
 
 declarationList:	declaration declarationList		{$$ = astCreate(AST_DECLARATIONLIST, 0, $1, $2, 0, 0);}

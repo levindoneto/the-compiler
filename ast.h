@@ -103,4 +103,12 @@ AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2
  */
 void astPrint(AST* node, int level);
 
+
+/* Function for making simular program.
+ * @param {AST_NODE*} node.
+ * @return {FILE*} output.
+ *
+ */
+void astreeProgram(AST* node, FILE* output);
+
 #endif

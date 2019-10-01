@@ -86,7 +86,7 @@ void astPrint(AST *node, int level) {
 }
 
 void astMakeProgram(AST* node, FILE* fileOut) {
-	if(!node){
+	if(!node) {
         return;
     }
     switch(node->type){
@@ -227,7 +227,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
             fprintf(fileOut, " ) then ");
 			astMakeProgram(node->son[1], fileOut);
             fprintf(fileOut, " else ");
-			astMakeProgram(node->son[3], fileOut);
+			astMakeProgram(node->son[2], fileOut);
 			break;
 
 		case AST_WHILE:
@@ -364,7 +364,7 @@ void astMakeProgram(AST* node, FILE* fileOut) {
             astMakeProgram(node->son[0],fileOut);
             astMakeProgram(node->son[1],fileOut);
             break;
-	default: break;
+	default: printf("DEFAULT");break;
             
     }
 }

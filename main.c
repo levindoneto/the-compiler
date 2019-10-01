@@ -75,4 +75,5 @@ int main(int argc, char ** argv) {
        		fprintf(stderr, "Error parsing the code on line %d\n", getLineNumber());
 	        exit(3); // 3: error on reading source code
 	}
+	return 0;
 }
