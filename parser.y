@@ -14,7 +14,7 @@
 %union {
 	struct hash_node* symbol;
 	struct ast_node* ast;
-}
+} 
 
 %token KW_BYTE
 %token KW_INT
@@ -38,25 +38,35 @@
 
 %token TOKEN_ERROR
 
-%token<symbol> TK_IDENTIFIER
-%token<symbol> LIT_INTEGER
-%token<symbol> LIT_FLOAT
-%token<symbol> LIT_TRUE
-%token<symbol> LIT_FALSE
-%token<symbol> LIT_CHAR
-%token<symbol> LIT_STRING
+%token <symbol> TK_IDENTIFIER
+%token <symbol> LIT_INTEGER
+%token <symbol> LIT_FLOAT
+%token <symbol> LIT_TRUE
+%token <symbol> LIT_FALSE
+%token <symbol> LIT_CHAR
+%token <symbol> LIT_STRING
 
 
-%type<ast> program
-%type<ast> declarationList
-%type<ast> declaration
-
-
-%nonassoc JUSTIF
-%nonassoc KW_ELSE
-
-%nonassoc noSemiColon
-%nonassoc ';'
+%type <ast> program
+%type <ast> declaration
+%type <ast> variableDeclaration
+%type <ast> functionDeclaration
+%type <ast> vectorDeclaration
+%type <ast> variableType
+%type <ast> variableValue
+%type <ast> vectorValue
+%type <ast> paramList
+%type <ast> remainder
+%type <ast> param
+%type <ast> commandBlock
+%type <ast> commandRemainder
+%type <ast> command
+%type <ast> fluxControl
+%type <ast> printValue
+%type <ast> expression
+%type <ast> argList
+%type <ast> argRemainder
+%type <ast> argument
 
 
 %left '*' '/'
@@ -66,17 +76,17 @@
 %right '!'
 
 %%
-program:		program declaration {$$ = $1;}
+program:		program declaration {$$ = $1}
 	|
 	;
 
-declaration:		variableDeclaration 
+declaration:		variableDeclaration {$$ = }
 	|		functionDeclaration
 	|		vectorDeclaration
         ;
 
 //		VARIABLE DECLARATION
-variableDeclaration: variableType TK_IDENTIFIER	'=' variableValue ';'
+variableDeclaration: 	variableType TK_IDENTIFIER	'=' variableValue ';'
         ;
 
 vectorDeclaration:	variableType TK_IDENTIFIER '[' LIT_INTEGER ']' vectorValue ';'
@@ -97,15 +107,15 @@ vectorRemainder:	variableValue vectorRemainder
 	|
 	;
 
-// Literals
-variableValue:		LIT_INTEGER
-	|		LIT_FLOAT
+variableValue:		LIT_INTEGER {fprintf(stderr, "INT_Id=%d\n", $1);}
+	|		LIT_FLOAT {fprintf(stderr, "FLOAT_Id=%d\n", $1);}
 	|		LIT_CHAR
-	|		booleanValue
+	|		LIT_TRUE
+	|		LIT_FALSE
 	;
 
 //		FUNCTION DECLARATION
-functionDeclaration: variableType TK_IDENTIFIER '(' paramList ')' '{' commandBlock '}'
+functionDeclaration: 	variableType TK_IDENTIFIER '(' paramList ')' commandBlock
         ;
 
 paramList:		param remainder
@@ -120,69 +130,57 @@ param:			variableType TK_IDENTIFIER
 	;
 
 // COMMAND BLOCK
-commandBlock:		command commandRemainder
+commandBlock:		'{' command commandRemainder '}'
 	;
 
-commandFlux:		'{' command commandRemainderFlux
-	|		command commandEnd command
-	;
-
-commandRemainderFlux:	';' command commandRemainderFlux
-	|		'}' command
-	;
-
-commandEnd:		';' 
-	|		%prec noSemiColon
-	;
-
-commandRemainder:	';' command commandRemainder
+commandRemainder:	command	';' commandRemainder
 	|
 	;
 
 
-command:		assignement 
-	|		readComm 
-	|		printComm 
-	|		returnComm 
+command:		TK_IDENTIFIER '=' expression
+	|		TK_IDENTIFIER '[' expression ']' '=' expression 
+	|		KW_READ	  TK_IDENTIFIER 
+	|		KW_PRINT  printValue 
+	|		KW_RETURN expression 
 	|		fluxControl 
+	|		commandBlock 
 	|
         ;
 
 
 
 //		COMMANDS
-assignement:		TK_IDENTIFIER '=' expression
-	|		TK_IDENTIFIER '[' expression ']' '=' expression
-	;
-
-fluxControl:		KW_IF		'(' expression ')' KW_THEN commandFlux %prec JUSTIF
-	|		KW_IF		'(' expression ')' KW_THEN commandFlux KW_ELSE commandFlux
-	|		KW_WHILE	'(' expression ')' commandFlux 
-	|		KW_FOR		'(' TK_IDENTIFIER ':' expression ',' expression ',' expression ')' commandFlux
+fluxControl:		KW_IF		'(' expression ')' KW_THEN command
+	|		KW_IF		'(' expression ')' KW_THEN command KW_ELSE command
+	|		KW_WHILE	'(' expression ')' command 
+	|		KW_FOR		'(' TK_IDENTIFIER ':' expression ',' expression ',' expression ')' command
 	|		KW_BREAK
 	;
 
-readComm:		KW_READ	  TK_IDENTIFIER
-	;
-
-printComm:		KW_PRINT  printValue printElement
-	;
-
-printValue:		expression
+printValue:		expression printValue
+	|		expression
 	|		LIT_STRING
 	;
 
-printElement:		printValue printElement
-	|
-	;
-
-returnComm:		KW_RETURN expression
-	;
-
 //		EXPRESSIONS
-expression:		arithmetic
-	|		booleanExp
-	|		TK_IDENTIFIER '(' argList ')'
+expression:		argument
+	|		TK_IDENTIFIER  '(' argList ')'
+	|		TK_IDENTIFIER  '[' expression ']'
+	|		'(' expression ')'
+	|		expression 		'+' 			expression
+	|		expression 		'-' 			expression
+	|		expression 		'*' 			expression
+	|		expression 		'/' 			expression
+	|		expression 		'<' 			expression
+	|		expression 		'>' 			expression
+	|		expression 		'.' 			expression
+	|		expression 		'v' 			expression
+	|		expression 		'~' 			expression
+	|		expression 		OPERATOR_LE 		expression
+	|		expression 		OPERATOR_GE 		expression
+	|		expression 		OPERATOR_EQ 		expression
+	|		expression 		OPERATOR_DIF	 	expression
 	;
 
 argList:		argument argRemainder
@@ -195,75 +193,11 @@ argRemainder:		',' argument argRemainder
 
 argument:		TK_IDENTIFIER
 	|		LIT_FLOAT
-	|		LIT_TRUE
-	|		LIT_FALSE
 	|		LIT_INTEGER
 	|		LIT_CHAR
-	;
-
-//		ARITHMETIC PART
-arithmetic:		arithmeticValue arithmeticRemainder
-	;
-
-arithmeticRemainder:	arithmeticOp arithmeticBegin '(' arithmetic ')' arithmeticEnd
-	|		arithmeticEnd
-	;
-
-arithmeticEnd:		arithmeticOp arithmeticValue arithmeticEnd
-	|
-	;
-
-arithmeticBegin:	arithmeticValue arithmeticOp arithmeticBegin
-	|
-	;
-
-arithmeticValue:	identifiers
-	|		LIT_INTEGER
-	|		LIT_CHAR
-	|		LIT_FLOAT
-	;
-
-identifiers:		TK_IDENTIFIER
-	|		TK_IDENTIFIER '[' expression ']'
-	;
-
-arithmeticOp:		'*'
-	|		'/'
-	|		'+'
-	|		'-'
-	;
-
-//		BOOLEAN PART
-booleanExp:		booleanValue booleanRemainder
-	;
-
-booleanRemainder:	booleanOp booleanValue booleanRemainder
-	|
-	;
-
-booleanValue:		LIT_FALSE
-	|		LIT_TRUE
-	|		arithmetic comparativeOp arithmetic
-	;
-
-booleanOp:		'.'
-	|		'v'
-	|		'~'
-//	|		'#'
-//	|		'$'
-//	|		'&'
-	;
-
-comparativeOp:		OPERATOR_LE
-	|		OPERATOR_GE
-	|		OPERATOR_EQ
-	|		OPERATOR_DIF
-	|		'<'
-	|		'>'
 	;
 
 %%
-
 
 
 int yyerror(char *msg){
