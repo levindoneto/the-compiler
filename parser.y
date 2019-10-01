@@ -137,7 +137,7 @@ commandBlock:		'{' command commandRemainder '}'	{$$ = astCreate(AST_COMMANDBLOCK
 	;
 
 commandRemainder:	command	';' commandRemainder		{$$ = astCreate(AST_COMMANDREMAINDER, 0, $1, $3, 0, 0);}
-	|
+	|							{$$ = 0;}
 	;
 
 
