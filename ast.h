@@ -35,6 +35,24 @@
 #define AST_COMMANDBLOCK 15
 #define AST_COMMANDREMAINDER 16
 
+// command
+#define AST_ATTR 17
+#define AST_VECTORATTR 18
+#define AST_READ 19
+#define AST_PRINT 20
+#define AST_RETURN 21
+#define AST_FLUXCONTROL 22
+
+// fluxControl
+#define AST_IFTHEN 23
+#define AST_IFTHENELSE 24
+#define AST_WHILE 25
+#define AST_FOR 26
+#define AST_BREAK 27
+
+// printValue
+#define AST_PRINTVALUE 28
+#define AST_PRINTFINAL 29
 
 typedef struct ast_node {
     int type;
