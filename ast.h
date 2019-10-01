@@ -33,6 +33,8 @@
 #define AST_REMAINDER 13
 #define AST_PARAM 14
 #define AST_COMMANDBLOCK 15
+#define AST_COMMANDREMAINDER 16
+
 
 typedef struct ast_node {
     int type;
