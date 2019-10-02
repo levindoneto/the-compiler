@@ -16,4 +16,8 @@ jobs:
     - name: test1
       run: |
         ./etapa3 tests/stage3/input.txt output.txt
+        echo ">> OUTPUT <<"
         cat output.txt
+        echo ">> DIFF <<"
+        diff tests/stage3/input.txt output.txt
+        ./etapa3 output.tx output2.txt
