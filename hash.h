@@ -12,6 +12,24 @@
 #define TEXT_SIZE 128
 #define HASHTABLE_SIZE 997 // prime number
 
+#define SYMBOL_IDENTIFIER 1
+#define SYMBOL_LITINT 2
+#define SYMBOL_LITREAL 3
+#define SYMBOL_SCALAR 4
+#define SYMBOL_VECTOR 5
+#define SYMBOL_FUNCTION 6
+#define SYMBOL_LITBOOL 7
+#define SYMBOL_LITCHAR 8
+#define SYMBOL_LITSTRING 9
+#define SYMBOL_LITBYTE 10
+#define SYMBOL_FUNCTIONPAR 11
+
+#define DATATYPE_INT 1
+#define DATATYPE_LONG 2
+#define DATATYPE_FLOAT 3
+#define DATATYPE_BOOL 4
+#define DATATYPE_BYTE 5
+
 typedef struct hashtable_node {
     char *value;
     int type;
