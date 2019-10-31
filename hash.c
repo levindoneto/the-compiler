@@ -60,13 +60,14 @@ HASHTABLE_NODE* hashFind(char *value){
 }
 
 int hashGetNumberUndeclared(void){
-    HASH_NODE* node;
-    int numberSemanticErrors = INIT;
+    HASHTABLE_NODE* hashtableNode;
+    int numberSemanticErrors = INIT_VALUE;
+    int node;
 
-    for(int i = 0; i < HASH_SIZE; ++i){
-        for(node = Table[i]; node; node = node->next){
-            if(node->type == SYMBOL_IDENTIFIER){
-                fprintf(stderr, "Semantic ERROR: Symbol %s undeclared.\n", node->text);
+    for(node = 0; node < HASHTABLE_SIZE; ++node) {
+        for(hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next){
+            if(hashtableNode->type == SYMBOL_IDENTIFIER){
+                fprintf(stderr, "Semantic ERROR: Symbol %s undeclared.\n", hashtableNode->text);
                 numberSemanticErrors++;
             }
         }

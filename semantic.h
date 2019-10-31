@@ -1,9 +1,11 @@
-#ifndef ETAPA1_SEMANTIC_H
-#define ETAPA1_SEMANTIC_H
+#ifndef SEMANTIC_H
+#define SEMANTIC_H
 
-#define FALSE 0
-#define TRUE 1
+#define INIT 0
 
-// TODO
+void checkUndeclared(void);
+int getSemanticErrors(void);
+void checkAndSetTypes(AST*node);
+void checkOperands(AST* node);
 
 #endif
