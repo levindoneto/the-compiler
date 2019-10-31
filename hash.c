@@ -67,7 +67,7 @@ int hashGetNumberUndeclared(void){
     for(node = 0; node < HASHTABLE_SIZE; ++node) {
         for(hashtableNode = Hashtable[node]; hashtableNode; hashtableNode = hashtableNode->next){
             if(hashtableNode->type == SYMBOL_IDENTIFIER){
-                fprintf(stderr, "Semantic ERROR: Symbol %s undeclared.\n", hashtableNode->text);
+                fprintf(stderr, "Semantic ERROR: Symbol %s undeclared.\n", hashtableNode->value);
                 numberSemanticErrors++;
             }
         }

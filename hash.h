@@ -33,6 +33,7 @@
 typedef struct hashtable_node {
     char *value;
     int type;
+    int datatype;
     struct HASHTABLE_NODE *next;
 } HASHTABLE_NODE;
 

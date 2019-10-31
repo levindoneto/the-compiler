@@ -1,6 +1,8 @@
 #ifndef SEMANTIC_H
 #define SEMANTIC_H
 
+#include "ast.h"
+
 #define INIT 0
 
 void checkUndeclared(void);

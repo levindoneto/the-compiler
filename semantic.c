@@ -15,21 +15,19 @@ void checkAndSetTypes(AST*node) {
     if (!node) return;
     if(node->type == AST_DECLARATION || node->type == AST_VARIABLEDECLARATION || node->type == AST_FUNCTIONDECLARATION ||node->type == AST_VECTORDECLARATION || node->type == AST_PARAM || node->type == AST_PARAM) {
         if(node->symbol && node->symbol->type != AST_SYMBOL && node->type!= AST_PARAM) {
-            fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->text);
+            fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->value);
             errorsSemantic++;
         }
         if(node->type == AST_DECLARATION)
             node->symbol->type = SYMBOL_SCALAR;
-        if(node->type == AST_PARAMETER){
+        if(node->type == AST_PARAM)
             node->symbol->type = SYMBOL_SCALAR;
-        }
         if(node->type == AST_FUNCTIONDECLARATION)
             node->symbol->type = SYMBOL_FUNCTION;
         if(node->type == AST_VECTORDECLARATION)
             node->symbol->type = SYMBOL_VECTOR;
 
-        //set also the datatype from declaration
-        if(node->type!= AST_PARAMETER) {
+        if(node->type!= AST_PARAM) {
             if(node->son[0]->type==AST_BOOL)
                 node->symbol->datatype = DATATYPE_BOOL;
             if(node->son[0]->type==AST_BYTE)
