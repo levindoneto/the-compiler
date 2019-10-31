@@ -69,6 +69,13 @@ HASHTABLE_NODE* hashInsert(char *value, int type);
  */
 HASHTABLE_NODE* hashFind(char *value);
 
+
+/* Function for getting number of undeclared symbols within the hash.
+ * @parameter:  {void}.
+ * @return:     {void}.
+ */
+int hashGetNumberUndeclared(void);
+
 /* Function for printing the whole hash table in the console.
  * @parameter:  {void}.
  * @return:     {void}.

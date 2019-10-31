@@ -59,6 +59,21 @@ HASHTABLE_NODE* hashFind(char *value){
     return NULL;
 }
 
+int hashGetNumberUndeclared(void){
+    HASH_NODE* node;
+    int numberSemanticErrors = INIT;
+
+    for(int i = 0; i < HASH_SIZE; ++i){
+        for(node = Table[i]; node; node = node->next){
+            if(node->type == SYMBOL_IDENTIFIER){
+                fprintf(stderr, "Semantic ERROR: Symbol %s undeclared.\n", node->text);
+                numberSemanticErrors++;
+            }
+        }
+    }
+    return numberSemanticErrors;
+}
+
 void hashPrint(void){
     HASHTABLE_NODE* hashtableNode;
     int node;
