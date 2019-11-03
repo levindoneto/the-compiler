@@ -121,6 +121,34 @@ void checkOperands(AST* node) {
                 errorsSemantic++;
             }
             break;
+	case AST_SUB:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])){
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_ADD:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])){
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_MUL:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])){
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_DIV: // deixei quieto para deixar o exemplo do sor ,depois muda
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])){
+                    errorsSemantic++;
+                }
+            }
+            break;
         default:
             printf("Default case");
     }
