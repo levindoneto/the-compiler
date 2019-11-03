@@ -154,6 +154,25 @@ void checkOperands(AST* node) {
                 errorsSemantic++;
             }
             break;
+	// TODO: CHECK THE CASES BELOW <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        case AST_VARIABLEDECLARATION :
+            if((node->symbol->type == SYMBOL_FUNCTION|| node->symbol->type == SYMBOL_VECTOR)) {
+                errorsSemantic++;
+            }
+            if (isBool(node->son[SON_LEFT])) {
+                if(node->symbol->datatype==DATATYPE_INT ||
+                   node->symbol->datatype==DATATYPE_FLOAT ||
+                   node->symbol->datatype==DATATYPE_LONG ||
+                   node->symbol->datatype==DATATYPE_BYTE) {
+                       errorsSemantic++;
+                }
+            }
+            if (isNotBool(node->son[SON_LEFT])){
+                if(node->symbol->datatype ==DATATYPE_BOOL) {
+                    errorsSemantic++;
+                }
+            }
+            break;
         default:
             printf("Default case");
     }
