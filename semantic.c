@@ -173,6 +173,14 @@ void checkOperands(AST* node) {
                 }
             }
             break;
+        case AST_VECTORDECLARATION:
+            if(isBool(node->son[SON_LEFT])) { // index==bool
+                errorsSemantic++;
+            }
+            if(node->symbol->type != SYMBOL_VECTOR) {
+                errorsSemantic++;
+            }
+            break;
         default:
             printf("Default case");
     }
