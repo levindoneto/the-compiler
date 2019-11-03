@@ -11,8 +11,10 @@ int getNumberErrorSemantic(void){
 }
 
 void checkAndSetTypes(AST*node) {
-    int i;
-    if (!node) return;
+    int exp;
+    if (!node) {
+	return;
+    }
     if(node->type == AST_DECLARATION || node->type == AST_VARIABLEDECLARATION || node->type == AST_FUNCTIONDECLARATION ||node->type == AST_VECTORDECLARATION || node->type == AST_PARAM || node->type == AST_PARAM) {
         if(node->symbol && node->symbol->type != AST_SYMBOL && node->type!= AST_PARAM) {
             fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->value);
@@ -28,42 +30,109 @@ void checkAndSetTypes(AST*node) {
             node->symbol->type = SYMBOL_VECTOR;
 
         if(node->type!= AST_PARAM) {
-            if(node->son[0]->type==AST_BOOL)
+            if(node->son[SON_LEFT]->type==AST_BOOL)
                 node->symbol->datatype = DATATYPE_BOOL;
-            if(node->son[0]->type==AST_BYTE)
+            if(node->son[SON_LEFT]->type==AST_BYTE)
                 node->symbol->datatype = DATATYPE_BYTE;
-            if(node->son[0]->type == AST_INT)
+            if(node->son[SON_LEFT]->type == AST_INT)
                 node->symbol->datatype = DATATYPE_INT;
-            if(node->son[0]->type==AST_LONG)
+            if(node->son[SON_LEFT]->type==AST_LONG)
                 node->symbol->datatype = DATATYPE_LONG;
-            if(node->son[0]->type == AST_FLOAT )
+            if(node->son[SON_LEFT]->type == AST_FLOAT )
                 node->symbol->datatype = DATATYPE_FLOAT;
         }
     }
-    for (int i = 0; i < MAX_SONS; ++i) {
-        checkAndSetTypes(node->son[i]);
+    for (exp = INIT; exp < MAX_SONS; ++exp) {
+        checkAndSetTypes(node->son[exp]);
     }
 }
 
 
 void checkOperands(AST* node) {
-    if (!node) return;
-
-    int i = 0;
+    if (!node) {
+	return;
+    }
     int type;
+    int exp; // expression iterator
 
     switch(node->type) {
         case AST_FUNCTIONDECLARATION:
 	    printf("TODO");
+	case AST_LESS:
+	    for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])) {
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_GREATER:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])) {
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_LE:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])) {
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_GE:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isBool(node->son[exp])) {
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_NOT:
+            if(isNotBool(node->son[SON_LEFT])){
+                errorsSemantic++;
+            }
+            break;
+        case AST_AND:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isNotBool(node->son[exp])) {
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_OR:
+            for(exp = INIT; exp < MAX_COMPARE; exp++){
+                if(isNotBool(node->son[exp])) {
+                    errorsSemantic++;
+                }
+            }
+            break;
+        case AST_DIFF:
+            if(isNotBool(node->son[SON_LEFT])!=isNotBool(node->son[SON_RIGHT])){
+                errorsSemantic++;
+            }
+            if(isBool(node->son[SON_LEFT])!=isBool(node->son[SON_RIGHT])){
+                errorsSemantic++;
+            }
+            break;
+        case AST_EQ:
+            if(isNotBool(node->son[SON_LEFT]) != isNotBool(node->son[SON_RIGHT])){
+                errorsSemantic++;
+            }
+            if(isBool(node->son[SON_LEFT]) != isBool(node->son[SON_RIGHT])){
+                errorsSemantic++;
+            }
+            break;
         default:
             printf("Default case");
+    }
+    for(exp = INIT; exp < MAX_SONS; exp++) {
+        checkOperands(node->son[exp]);
     }
 }
 
 int isBool(AST* node){
 	if (!node) return 0;
 
-	if (node->type == AST_PARENTHESIS) return isBool(node->son[0]);
+	if (node->type == AST_PARENTHESIS) return isBool(node->son[SON_LEFT]);
 
 	if (	node->type == AST_LESS							||
 		node->type == AST_GREATER						||
@@ -100,7 +169,7 @@ int isBool(AST* node){
 int isNotBool(AST* node){
 	if (!node) return 0;
 
-	if (node->type == AST_PARENTHESIS) return isNotBool(node->son[0]);
+	if (node->type == AST_PARENTHESIS) return isNotBool(node->son[SON_LEFT]);
 
 	if (	node->type == AST_ADD							||
 		node->type == AST_SUB							||
@@ -138,22 +207,22 @@ int isNotBool(AST* node){
 int confirmType(AST* node, int datatype){
 	if (!node) return 0;
 
-	if (datatype == DATATYPE_BOOL) return isBool(node->son[0]);
-	else return isNotBool(node->son[0]);
+	if (datatype == DATATYPE_BOOL) return isBool(node->son[SON_LEFT]);
+	else return isNotBool(node->son[SON_LEFT]);
 }
 
 int checkReturn(AST* node, int datatype){
 	if (!node) return 0;
 
-	if (node->son[0]->type == AST_RETURN) return confirmType(node->son[0], datatype);
+	if (node->son[SON_LEFT]->type == AST_RETURN) return confirmType(node->son[SON_LEFT], datatype);
 	else return checkReturn(node->son[1], datatype);
 }
 
 int verifyReturn(AST* node){
-	if (!node || !node->son[2] || node->son[2]->son[0]) return 0;
+	if (!node || !node->son[2] || node->son[2]->son[SON_LEFT]) return 0;
 
-	if (node->son[2]->son[0]->type == AST_RETURN) return confirmType(node->son[2]->son[0], node->symbol->datatype);
-	else return checkReturn(node->son[2]->son[0], node->symbol->datatype);
+	if (node->son[2]->son[SON_LEFT]->type == AST_RETURN) return confirmType(node->son[2]->son[SON_LEFT], node->symbol->datatype);
+	else return checkReturn(node->son[2]->son[SON_LEFT], node->symbol->datatype);
 }
 
 

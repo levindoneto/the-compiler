@@ -4,6 +4,9 @@
 #include "ast.h"
 
 #define INIT 0
+#define SON_LEFT 0
+#define SON_RIGHT 1
+#define MAX_COMPARE 2
 
 void checkUndeclared(void);
 int getSemanticErrors(void);
