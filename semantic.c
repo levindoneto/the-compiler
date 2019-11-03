@@ -149,6 +149,11 @@ void checkOperands(AST* node) {
                 }
             }
             break;
+	case AST_SYMBOL:
+            if((node->symbol->type == SYMBOL_FUNCTION|| node->symbol->type == SYMBOL_VECTOR)){
+                errorsSemantic++;
+            }
+            break;
         default:
             printf("Default case");
     }
