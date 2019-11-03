@@ -47,7 +47,17 @@ void checkAndSetTypes(AST*node) {
 
 
 void checkOperands(AST* node) {
-    printf("TODO");
+    if (!node) return;
+
+    int i = 0;
+    int type;
+
+    switch(node->type) {
+        case AST_FUNCTIONDECLARATION:
+	    printf("TODO");
+        default:
+            printf("Default case");
+    }
 }
 
 int isBool(AST* node){
@@ -67,9 +77,9 @@ int isBool(AST* node){
 		node->type == AST_NOT							||
 
 		(node->type 		== AST_SYMBOL 				&&
-		 (node->symbol->type 		==	SYMBOL_SCALAR	||	
-		  node->symbol->type 		==	SYMBOL_VECTOR	||	
-		  node->symbol->type 		==	SYMBOL_FUNCTION)	&& 
+		 (node->symbol->type 		==	SYMBOL_SCALAR	||
+		  node->symbol->type 		==	SYMBOL_VECTOR	||
+		  node->symbol->type 		==	SYMBOL_FUNCTION)	&&
 		 node->symbol->datatype == DATATYPE_BOOL)				||
 
 		(node->type 		== AST_SYMBOL 				&&
@@ -84,7 +94,7 @@ int isBool(AST* node){
 		 node->symbol->datatype == DATATYPE_BOOL)
 		) return 1;
 
-	return 0;	
+	return 0;
 }
 
 int isNotBool(AST* node){
@@ -97,11 +107,11 @@ int isNotBool(AST* node){
 		node->type == AST_MUL							||
 		node->type == AST_DIV							||
 
-		(node->type 		== AST_SYMBOL 				&&
-		 (node->symbol->type 		==	SYMBOL_SCALAR	||	
-		  node->symbol->type 		==	SYMBOL_VECTOR	||	
-		  node->symbol->type 		==	SYMBOL_FUNCTION)	&& 
-		 (node->symbol->datatype == DATATYPE_INT		||
+	 	 (node->type 		== AST_SYMBOL 				&&
+		 (node->symbol->type 		==	SYMBOL_SCALAR	||
+		  node->symbol->type 		==	SYMBOL_VECTOR	||
+		  node->symbol->type 		==	SYMBOL_FUNCTION)	&&
+		  (node->symbol->datatype == DATATYPE_INT		||
 		  node->symbol->datatype == DATATYPE_FLOAT		||
 		  node->symbol->datatype == DATATYPE_LONG))				||
 
@@ -121,9 +131,8 @@ int isNotBool(AST* node){
 		 (node->symbol->datatype == DATATYPE_INT		||
 		  node->symbol->datatype == DATATYPE_FLOAT		||
 		  node->symbol->datatype == DATATYPE_LONG))
-		) return 1;	
-
-	return 0;	
+		) return 1;
+	return 0;
 }
 
 int confirmType(AST* node, int datatype){
@@ -135,14 +144,14 @@ int confirmType(AST* node, int datatype){
 
 int checkReturn(AST* node, int datatype){
 	if (!node) return 0;
-	
+
 	if (node->son[0]->type == AST_RETURN) return confirmType(node->son[0], datatype);
 	else return checkReturn(node->son[1], datatype);
 }
 
 int verifyReturn(AST* node){
 	if (!node || !node->son[2] || node->son[2]->son[0]) return 0;
-	
+
 	if (node->son[2]->son[0]->type == AST_RETURN) return confirmType(node->son[2]->son[0], node->symbol->datatype);
 	else return checkReturn(node->son[2]->son[0], node->symbol->datatype);
 }

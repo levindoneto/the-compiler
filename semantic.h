@@ -14,5 +14,8 @@ int isNotBool(AST* node);
 int confirmType(AST* node, int datatype);
 int checkReturn(AST* node, int datatype);
 int verifyReturn(AST* node);
+int isArithmetic(AST* node);
+int isNotArithmetic(AST* node);
+
 
 #endif
