@@ -2,6 +2,8 @@
 
 int errorsSemantic = INIT;
 
+AST* rootNode = 0;
+
 void checkUndeclared(void){
     errorsSemantic += hashGetNumberUndeclared();
 }
@@ -15,32 +17,52 @@ void checkAndSetTypes(AST*node) {
     if (!node) {
 	return;
     }
-    if(node->type == AST_DECLARATION || node->type == AST_VARIABLEDECLARATION || node->type == AST_FUNCTIONDECLARATION ||node->type == AST_VECTORDECLARATION || node->type == AST_PARAM || node->type == AST_PARAM) {
+    if (!rootNode){
+	rootNode = node;
+    }
+    if(	node->type == AST_DECLARATION 		|| 
+	node->type == AST_VARIABLEDECLARATION 	|| 
+	node->type == AST_FUNCTIONDECLARATION 	||
+	node->type == AST_VECTORDECLARATION 	|| 
+	node->type == AST_PARAM			) {
         if(node->symbol && node->symbol->type != AST_SYMBOL && node->type!= AST_PARAM) {
             fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->value);
             errorsSemantic++;
         }
-        if(node->type == AST_DECLARATION)
-            node->symbol->type = SYMBOL_SCALAR;
-        if(node->type == AST_PARAM)
-            node->symbol->type = SYMBOL_SCALAR;
-        if(node->type == AST_FUNCTIONDECLARATION)
-            node->symbol->type = SYMBOL_FUNCTION;
-        if(node->type == AST_VECTORDECLARATION)
-            node->symbol->type = SYMBOL_VECTOR;
 
-        if(node->type!= AST_PARAM) {
-            if(node->son[SON_LEFT]->type==AST_BOOL)
-                node->symbol->datatype = DATATYPE_BOOL;
-            if(node->son[SON_LEFT]->type==AST_BYTE)
-                node->symbol->datatype = DATATYPE_BYTE;
-            if(node->son[SON_LEFT]->type == AST_INT)
-                node->symbol->datatype = DATATYPE_INT;
-            if(node->son[SON_LEFT]->type==AST_LONG)
-                node->symbol->datatype = DATATYPE_LONG;
-            if(node->son[SON_LEFT]->type == AST_FLOAT )
-                node->symbol->datatype = DATATYPE_FLOAT;
-        }
+	//declare symbol type and datatype
+	switch (node->type) {
+		case AST_VARIABLEDECLARATION:
+        		node->symbol->type = SYMBOL_SCALAR;
+		break;
+		case AST_FUNCTIONDECLARATION:
+        		node->symbol->type = SYMBOL_FUNCTION;
+		break;
+		case AST_VECTORDECLARATION:
+        		node->symbol->type = SYMBOL_VECTOR;
+		break;
+		case AST_PARAM:
+        		node->symbol->type = SYMBOL_SCALAR;
+		break;
+	}
+	
+	switch(node->son[SON_LEFT]->type) {
+		case AST_BOOL:	
+                	node->symbol->datatype = DATATYPE_BOOL;
+		break;
+		case AST_BYTE:	
+                	node->symbol->datatype = DATATYPE_BYTE;
+		break;
+		case AST_INT:	
+                	node->symbol->datatype = DATATYPE_INT;
+		break;
+		case AST_LONG:	
+                	node->symbol->datatype = DATATYPE_LONG;
+		break;
+		case AST_FLOAT:	
+                	node->symbol->datatype = DATATYPE_FLOAT;
+		break;
+	}
     }
     for (exp = INIT; exp < MAX_SONS; ++exp) {
         checkAndSetTypes(node->son[exp]);
@@ -56,32 +78,78 @@ void checkOperands(AST* node) {
     int exp; // expression iterator
 
     switch(node->type) {
-        case AST_FUNCTIONDECLARATION:
-	    printf("TODO");
+	// Item 1 - Declarações
+	case AST_SYMBOL:
+		if(node->symbol->type == SYMBOL_IDENTIFIER)	
+        		fprintf(stderr, "Semantic ERROR: Symbol %s has not been declared. \n", node->symbol->value);
+	break;
+	// Item 2 - Uso Correto
+	// Utilização de escalar
+	case AST_FOR:
+	case AST_ATTR:
+		if (node->symbol->datatype != DATATYPE_BOOL && isBool(node->son[0])){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive boolean values. \n", node->symbol->value);
+		} else if (node->symbol->datatype == DATATYPE_BOOL && isNotBool(node->son[0])){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive non boolean values. \n", node->symbol->value);
+		}
+	case AST_READ:
+		if (node->symbol->type != SYMBOL_SCALAR){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s should be scalar in scalar attributions, reads and fors. \n", node->symbol->value);
+            		errorsSemantic++;
+		}
+        break;	
+	// Utilização de vetor
+	case AST_VECTORATTR:
+		if (node->symbol->datatype != DATATYPE_BOOL && isBool(node->son[1])){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive boolean values. \n", node->symbol->value);
+		} else if (node->symbol->datatype == DATATYPE_BOOL && isNotBool(node->son[1])){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive non boolean values. \n", node->symbol->value);
+		}
+	case AST_VECTORPOS:
+		if (isBool(node->son[0])){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s, a vector cannot have a boolean position. \n", node->symbol->value);
+		}
+		if (node->symbol->type != SYMBOL_VECTOR){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s should be vector in vector attributions and positions. \n", node->symbol->value);
+            		errorsSemantic++;
+		}
+        break;	
+	// Utilização de função
+	case AST_FUNCTIONCALL:
+		if (node->symbol->type != SYMBOL_FUNCTION){
+        		fprintf(stderr, "Semantic ERROR: Symbol %s should be function in function calls. \n", node->symbol->value);
+            		errorsSemantic++;
+		}
+		if(checkFunctionParams(node) == 0){
+                	errorsSemantic++;
+		}
+        break;	
+
+
 	case AST_LESS:
 	    for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])) {
+                if(isNotBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
             break;
         case AST_GREATER:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])) {
+                if(isNotBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
             break;
         case AST_LE:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])) {
+                if(isNotBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
             break;
         case AST_GE:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])) {
+                if(isNotBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
@@ -123,38 +191,32 @@ void checkOperands(AST* node) {
             break;
 	case AST_SUB:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])){
+                if(isNotBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
         case AST_ADD:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])){
+                if(isNotBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
         case AST_MUL:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])){
+                if(isNotBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
         case AST_DIV:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isBool(node->son[exp])){
+                if(isNotBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
-	case AST_SYMBOL:
-            if((node->symbol->type == SYMBOL_FUNCTION|| node->symbol->type == SYMBOL_VECTOR)){
-                errorsSemantic++;
-            }
-            break;
-	// TODO: CHECK THE CASES BELOW <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         case AST_VARIABLEDECLARATION :
             if((node->symbol->type == SYMBOL_FUNCTION|| node->symbol->type == SYMBOL_VECTOR)) {
                 errorsSemantic++;
@@ -180,6 +242,20 @@ void checkOperands(AST* node) {
             if(node->symbol->type != SYMBOL_VECTOR) {
                 errorsSemantic++;
             }
+		AST* auxnode = node->son[2];
+		while (auxnode){
+			if(	node->symbol->datatype != DATATYPE_BOOL && isBool(auxnode->son[0])	||
+				node->symbol->datatype == DATATYPE_BOOL && isNotBool(auxnode->son[0])) errorsSemantic++;
+			auxnode = auxnode->son[1];
+		}
+            break;
+        case AST_FUNCTIONDECLARATION:
+            if(node->symbol->type != SYMBOL_FUNCTION) {
+                errorsSemantic++;
+            }
+	    if(verifyReturn(node) == 0){
+                errorsSemantic++;
+	    }
             break;
         default:
             printf("Default case");
@@ -242,23 +318,25 @@ int isNotBool(AST* node){
 		  node->symbol->type 		==	SYMBOL_FUNCTION)	&&
 		  (node->symbol->datatype == DATATYPE_INT		||
 		  node->symbol->datatype == DATATYPE_FLOAT		||
+		  node->symbol->datatype == DATATYPE_BYTE		||
 		  node->symbol->datatype == DATATYPE_LONG))				||
 
 		(node->type 			== AST_SYMBOL 			&&
 		 (node->symbol->type 		== SYMBOL_LITINT	||
-		  node->symbol->type 		== SYMBOL_LITREAL	||
-		  node->symbol->type 		== SYMBOL_LITSTRING))			||
+		  node->symbol->type 		== SYMBOL_LITREAL))			||
 
 		(node->type 			== AST_VECTORPOS		&&
 		 node->symbol->type 		== SYMBOL_VECTOR		&&
 		 (node->symbol->datatype == DATATYPE_INT		||
 		  node->symbol->datatype == DATATYPE_FLOAT		||
+		  node->symbol->datatype == DATATYPE_BYTE		||
 		  node->symbol->datatype == DATATYPE_LONG))				||
 
 		(node->type			== AST_FUNCTIONCALL		&&
 		 node->symbol->type 		== SYMBOL_FUNCTION		&&
 		 (node->symbol->datatype == DATATYPE_INT		||
 		  node->symbol->datatype == DATATYPE_FLOAT		||
+		  node->symbol->datatype == DATATYPE_BYTE		||
 		  node->symbol->datatype == DATATYPE_LONG))
 		) return 1;
 	return 0;
@@ -286,3 +364,30 @@ int verifyReturn(AST* node){
 }
 
 
+int checkFunctionParams(AST* node){
+	AST* auxnode = rootNode;
+	
+	while (auxnode) {
+		if (auxnode->son[0]->type == AST_FUNCTIONDECLARATION) {
+			if (strcmp(auxnode->son[0]->symbol->value, node->symbol->value) == 0) break;
+		}
+		else auxnode = auxnode->son[1];
+	}
+	
+	if (!auxnode) return 0;
+
+	if (!auxnode->son[2] && !node->son[0]) return 1;
+
+	auxnode = auxnode->son[2];
+	node = node->son[0];
+
+	while (auxnode && node){
+		if (!(	(isBool(auxnode->son[0]->son[0]) && isBool(node->son[0])) 		|| 
+			(isNotBool(auxnode->son[0]->son[0]) && isNotBool(node->son[0]))
+		      )) return 0;
+		auxnode = auxnode->son[1];
+		node = node->son[1];
+	}
+
+	if (!auxnode && !node) return 1;
+}
