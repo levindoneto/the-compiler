@@ -142,7 +142,7 @@ void checkOperands(AST* node) {
                 }
             }
             break;
-        case AST_DIV: // deixei quieto para deixar o exemplo do sor ,depois muda
+        case AST_DIV:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
                 if(isBool(node->son[exp])){
                     errorsSemantic++;
