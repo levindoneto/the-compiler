@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "ast.h"
 #include "y.tab.h"
+#include "semantic.h"
 
 extern int getLineNumber();
 extern int isRunning();
@@ -74,6 +75,10 @@ int main(int argc, char ** argv) {
     	}  else {
        		fprintf(stderr, "Error parsing the code on line %d\n", getLineNumber());
 	        exit(3); // 3: error on reading source code
+	}
+	if (getErrorsSemantic() > 0) {
+		fprintf(stderr, "%d semantic errors have been found", getErrorsSemantic());
+		exit(4);
 	}
 	return 0;
 }
