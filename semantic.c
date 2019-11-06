@@ -20,10 +20,10 @@ void checkAndSetTypes(AST*node) {
     if (!rootNode){
 	rootNode = node;
     }
-    if(	node->type == AST_DECLARATION 		|| 
-	node->type == AST_VARIABLEDECLARATION 	|| 
+    if(	node->type == AST_DECLARATION 		||
+	node->type == AST_VARIABLEDECLARATION 	||
 	node->type == AST_FUNCTIONDECLARATION 	||
-	node->type == AST_VECTORDECLARATION 	|| 
+	node->type == AST_VECTORDECLARATION 	||
 	node->type == AST_PARAM			) {
         if(node->symbol && node->symbol->type != SYMBOL_IDENTIFIER && node->type!= AST_PARAM) {
             fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->value);
@@ -45,21 +45,21 @@ void checkAndSetTypes(AST*node) {
         		node->symbol->type = SYMBOL_SCALAR;
 		break;
 	}
-	
+
 	switch(node->son[SON_LEFT]->type) {
-		case AST_BOOL:	
+		case AST_BOOL:
                 	node->symbol->datatype = DATATYPE_BOOL;
 		break;
-		case AST_BYTE:	
+		case AST_BYTE:
                 	node->symbol->datatype = DATATYPE_BYTE;
 		break;
-		case AST_INT:	
+		case AST_INT:
                 	node->symbol->datatype = DATATYPE_INT;
 		break;
-		case AST_LONG:	
+		case AST_LONG:
                 	node->symbol->datatype = DATATYPE_LONG;
 		break;
-		case AST_FLOAT:	
+		case AST_FLOAT:
                 	node->symbol->datatype = DATATYPE_FLOAT;
 		break;
 	}
@@ -80,9 +80,10 @@ void checkOperands(AST* node) {
     switch(node->type) {
 	// Item 1 - Declarações
 	case AST_SYMBOL:
-		if(node->symbol->type == SYMBOL_IDENTIFIER)	
+		if(node->symbol->type == SYMBOL_IDENTIFIER) {
         		fprintf(stderr, "Semantic ERROR: Symbol %s has not been declared. \n", node->symbol->value);
             		errorsSemantic++;
+	}
 	break;
 	// Item 2 - Uso Correto
 	// Utilização de escalar
@@ -104,7 +105,7 @@ void checkOperands(AST* node) {
         		fprintf(stderr, "Semantic ERROR: Symbol %s should be scalar in scalar attributions, reads and fors. \n", node->symbol->value);
             		errorsSemantic++;
 		}
-        break;	
+        break;
 	// Utilização de vetor
 	case AST_VECTORATTR:
 		if (node->symbol->datatype != DATATYPE_BOOL && isBool(node->son[1])){
@@ -120,7 +121,7 @@ void checkOperands(AST* node) {
         		fprintf(stderr, "Semantic ERROR: Symbol %s should be vector in vector attributions and positions. \n", node->symbol->value);
             		errorsSemantic++;
 		}
-        break;	
+        break;
 	// Utilização de função
 	case AST_FUNCTIONCALL:
 		if (node->symbol->type != SYMBOL_FUNCTION){
@@ -130,10 +131,7 @@ void checkOperands(AST* node) {
 		if(checkFunctionParams(node) == 0){
                 	errorsSemantic++;
 		}
-        break;	
-
-
-	
+        break;
 	case AST_IFTHEN:
 	case AST_IFTHENELSE:
 	case AST_WHILE:
@@ -381,14 +379,14 @@ int verifyReturn(AST* node){
 
 int checkFunctionParams(AST* node){
 	AST* auxnode = rootNode;
-	
+
 	while (auxnode) {
 		if (auxnode->son[0]->type == AST_FUNCTIONDECLARATION) {
 			if (strcmp(auxnode->son[0]->symbol->value, node->symbol->value) == 0) break;
 		}
 		else auxnode = auxnode->son[1];
 	}
-	
+
 	if (!auxnode) return 0;
 
 	if (!auxnode->son[2] && !node->son[0]) return 1;
