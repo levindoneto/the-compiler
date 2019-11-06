@@ -83,10 +83,12 @@ void checkOperands(AST* node) {
 		if(node->symbol->type == SYMBOL_IDENTIFIER) {
         		fprintf(stderr, "Semantic ERROR: Symbol %s has not been declared. \n", node->symbol->value);
             		errorsSemantic++;
-	}
-	break;
-	// Item 2 - Uso Correto
-	// Utilização de escalar
+		}
+		if (node->symbol->type == SYMBOL_FUNCTION) {
+        		fprintf(stderr, "Semantic ERROR: Symbol %s is a function and should be followed by (). \n", node->symbol->value);
+            		errorsSemantic++;
+		}
+		break;
 	case AST_FOR:
 		if (isNotBool(node->son[1]) || isNotBool(node->son[2])){
         		fprintf(stderr, "Semantic ERROR: For conditions should be bool. \n");
