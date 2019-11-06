@@ -15,6 +15,6 @@ jobs:
       run: make
     - name: test1
       run: |
-        ./etapa4 tests/stage3/input.txt output.txt
+        ./etapa4 tests/stage4/in1.txt out.txt
         echo ">> OUTPUT <<"
-        cat output.txt
+        cat out.txt
