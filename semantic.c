@@ -8,7 +8,7 @@ void checkUndeclared(void){
     errorsSemantic += hashGetNumberUndeclared();
 }
 
-int getNumberErrorSemantic(void){
+int getSemanticErrors(void){
     return errorsSemantic;
 }
 
@@ -112,12 +112,15 @@ void checkOperands(AST* node) {
 	case AST_VECTORATTR:
 		if (node->symbol->datatype != DATATYPE_BOOL && isBool(node->son[1])){
         		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive boolean values. \n", node->symbol->value);
+            		errorsSemantic++;
 		} else if (node->symbol->datatype == DATATYPE_BOOL && isNotBool(node->son[1])){
         		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive non boolean values. \n", node->symbol->value);
+            		errorsSemantic++;
 		}
 	case AST_VECTORPOS:
 		if (isBool(node->son[0])){
         		fprintf(stderr, "Semantic ERROR: Symbol %s, a vector cannot have a boolean position. \n", node->symbol->value);
+            		errorsSemantic++;
 		}
 		if (node->symbol->type != SYMBOL_VECTOR){
         		fprintf(stderr, "Semantic ERROR: Symbol %s should be vector in vector attributions and positions. \n", node->symbol->value);
@@ -143,28 +146,28 @@ void checkOperands(AST* node) {
 		break;
 	case AST_LESS:
 	    for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])) {
+                if(isBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
             break;
         case AST_GREATER:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])) {
+                if(isBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
             break;
         case AST_LE:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])) {
+                if(isBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
             break;
         case AST_GE:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])) {
+                if(isBool(node->son[exp])) {
                     errorsSemantic++;
                 }
             }
@@ -206,28 +209,28 @@ void checkOperands(AST* node) {
             break;
 	case AST_SUB:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])){
+                if(isBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
         case AST_ADD:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])){
+                if(isBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
         case AST_MUL:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])){
+                if(isBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
             break;
         case AST_DIV:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
-                if(isNotBool(node->son[exp])){
+                if(isBool(node->son[exp])){
                     errorsSemantic++;
                 }
             }
@@ -370,7 +373,8 @@ int checkReturn(AST* node, int datatype){
 }
 
 int verifyReturn(AST* node){
-	if (!node || !node->son[2] || !node->son[2]->son[SON_LEFT]) return 0;
+	if (!node || !node->son[2] || !node->son[2]->son[SON_LEFT]){ 
+	return 0;}
 
 	if (node->son[2]->son[SON_LEFT]->type == AST_RETURN) return confirmType(node->son[2]->son[SON_LEFT], node->symbol->datatype);
 	else return checkReturn(node->son[2]->son[SON_LEFT], node->symbol->datatype);
