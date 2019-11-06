@@ -9,7 +9,7 @@
 #define MAX_COMPARE 2
 
 void checkUndeclared(void);
-int getSemanticErrors(void);
+int getNumberErrorSemantic(void);
 void checkAndSetTypes(AST*node);
 void checkOperands(AST* node);
 int isBool(AST* node);

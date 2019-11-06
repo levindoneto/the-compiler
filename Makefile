@@ -1,4 +1,4 @@
-etapa3: main.o hash.o lex.yy.o y.tab.o ast.o semantic.o
+etapa4: main.o hash.o lex.yy.o y.tab.o ast.o semantic.o
 	gcc main.o hash.o lex.yy.o y.tab.o ast.o semantic.o -o etapa4
 
 main.o: main.c

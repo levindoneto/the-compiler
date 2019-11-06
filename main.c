@@ -71,14 +71,14 @@ int main(int argc, char ** argv) {
 	        hashPrint(); // print the whole structuring after parsing it
 		astMakeProgram(ast, output);
 		fclose(output);
-	        exit(0); // 0: for file alright
     	}  else {
        		fprintf(stderr, "Error parsing the code on line %d\n", getLineNumber());
 	        exit(3); // 3: error on reading source code
 	}
-	if (getErrorsSemantic() > 0) {
-		fprintf(stderr, "%d semantic errors have been found", getErrorsSemantic());
+	if (getNumberErrorSemantic() > 0) {
+		fprintf(stderr, "%d semantic error(s) has(ve) been found\n", getNumberErrorSemantic());
 		exit(4);
 	}
+	exit(0); // no found errors (sintatic and semantic)
 	return 0;
 }
