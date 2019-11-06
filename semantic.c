@@ -82,15 +82,22 @@ void checkOperands(AST* node) {
 	case AST_SYMBOL:
 		if(node->symbol->type == SYMBOL_IDENTIFIER)	
         		fprintf(stderr, "Semantic ERROR: Symbol %s has not been declared. \n", node->symbol->value);
+            		errorsSemantic++;
 	break;
 	// Item 2 - Uso Correto
 	// Utilização de escalar
 	case AST_FOR:
+		if (isNotBool(node->son[1]) || isNotBool(node->son[2])){
+        		fprintf(stderr, "Semantic ERROR: For conditions should be bool. \n");
+            		errorsSemantic++;
+		}
 	case AST_ATTR:
 		if (node->symbol->datatype != DATATYPE_BOOL && isBool(node->son[0])){
         		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive boolean values. \n", node->symbol->value);
+            		errorsSemantic++;
 		} else if (node->symbol->datatype == DATATYPE_BOOL && isNotBool(node->son[0])){
         		fprintf(stderr, "Semantic ERROR: Symbol %s cannot receive non boolean values. \n", node->symbol->value);
+            		errorsSemantic++;
 		}
 	case AST_READ:
 		if (node->symbol->type != SYMBOL_SCALAR){
@@ -126,6 +133,14 @@ void checkOperands(AST* node) {
         break;	
 
 
+	
+	case AST_IFTHEN:
+	case AST_IFTHENELSE:
+	case AST_WHILE:
+		if (isNotBool(node->son[0])){
+            		errorsSemantic++;
+		}
+		break;
 	case AST_LESS:
 	    for(exp = INIT; exp < MAX_COMPARE; exp++){
                 if(isNotBool(node->son[exp])) {
