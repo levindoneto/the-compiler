@@ -25,7 +25,7 @@ void checkAndSetTypes(AST*node) {
 	node->type == AST_FUNCTIONDECLARATION 	||
 	node->type == AST_VECTORDECLARATION 	|| 
 	node->type == AST_PARAM			) {
-        if(node->symbol && node->symbol->type != AST_SYMBOL && node->type!= AST_PARAM) {
+        if(node->symbol && node->symbol->type != SYMBOL_IDENTIFIER && node->type!= AST_PARAM) {
             fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->value);
             errorsSemantic++;
         }
