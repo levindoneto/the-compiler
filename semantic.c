@@ -272,8 +272,6 @@ void checkOperands(AST* node) {
                 errorsSemantic++;
 	    }
             break;
-        default:
-            printf("Default case");
     }
     for(exp = INIT; exp < MAX_SONS; exp++) {
         checkOperands(node->son[exp]);
@@ -372,7 +370,7 @@ int checkReturn(AST* node, int datatype){
 }
 
 int verifyReturn(AST* node){
-	if (!node || !node->son[2] || node->son[2]->son[SON_LEFT]) return 0;
+	if (!node || !node->son[2] || !node->son[2]->son[SON_LEFT]) return 0;
 
 	if (node->son[2]->son[SON_LEFT]->type == AST_RETURN) return confirmType(node->son[2]->son[SON_LEFT], node->symbol->datatype);
 	else return checkReturn(node->son[2]->son[SON_LEFT], node->symbol->datatype);
