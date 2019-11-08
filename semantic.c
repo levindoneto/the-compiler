@@ -8,7 +8,7 @@ void checkUndeclared(void) {
     errorsSemantic += hashGetNumberUndeclared();
 }
 
-int `getNumberErrorSemantic(void) {
+int getNumberErrorSemantic(void) {
     return errorsSemantic;
 }
 
