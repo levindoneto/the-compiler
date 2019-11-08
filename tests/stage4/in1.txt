@@ -1,5 +1,6 @@
 int a = 4;
-int vetor[2] = 1 2
+bool x = FALSE;
+int vetor[2] = 1 2;
 int main() {
 	a = 1;
 	
