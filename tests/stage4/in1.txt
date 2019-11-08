@@ -1,10 +1,11 @@
   
 int a = 4;
 bool x = FALSE;
-int vetor[2]: 1 2;
+bool y = FALSE;
+nt vetor[2]: 1 2;
 int main() {
 	a = 1;
-	bool y = x v TRUE;
+	y = TRUE;
 	vetor[a] = 3;
         return a*a;
 }
