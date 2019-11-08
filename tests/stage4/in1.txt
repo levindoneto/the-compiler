@@ -1,0 +1,11 @@
+  
+int a = 4;
+bool x = FALSE;
+bool y = FALSE;
+int vetor[2]: 1 2;
+int main() {
+	a = 1;
+	y = TRUE;
+	vetor[a] = 3;
+        return a*a;
+}

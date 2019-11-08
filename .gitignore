@@ -2,6 +2,8 @@
 lex.yy.c
 # Personal Ubuntu VM (Levindowski)
 vm.sh
+out.txt
+
 
 # Prerequisites
 *.d

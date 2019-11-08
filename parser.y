@@ -38,38 +38,35 @@
 
 %token TOKEN_ERROR
 
-%token <symbol> TK_IDENTIFIER
-%token <symbol> LIT_INTEGER
-%token <symbol> LIT_FLOAT
-%token <symbol> LIT_TRUE
-%token <symbol> LIT_FALSE
-%token <symbol> LIT_CHAR
-%token <symbol> LIT_STRING
+%token<symbol> TK_IDENTIFIER
+%token<symbol> LIT_INTEGER
+%token<symbol> LIT_FLOAT
+%token<symbol> LIT_TRUE
+%token<symbol> LIT_FALSE
+%token<symbol> LIT_CHAR
+%token<symbol> LIT_STRING
 
 
-%type <ast> program
-%type <ast> declarationList
-%type <ast> declaration
-%type <ast> variableDeclaration
-%type <ast> functionDeclaration
-%type <ast> vectorDeclaration
-%type <ast> vectorSize
-%type <ast> variableType
-%type <ast> variableValue
-%type <ast> vectorValue
-%type <ast> vectorRemainder
-%type <ast> paramList
-%type <ast> remainder
-%type <ast> param
-%type <ast> commandBlock
-%type <ast> commandRemainder
-%type <ast> command
-%type <ast> fluxControl
-%type <ast> printValue
-%type <ast> expression
-%type <ast> argList
-%type <ast> argRemainder
-%type <ast> argument
+%type<ast> program
+%type<ast> declarationList
+%type<ast> declaration
+%type<ast> vectorSize
+%type<ast> variableType
+%type<ast> variableValue
+%type<ast> vectorValue
+%type<ast> vectorRemainder
+%type<ast> paramList
+%type<ast> remainder
+%type<ast> param
+%type<ast> commandBlock
+%type<ast> commandRemainder
+%type<ast> command
+%type<ast> fluxControl
+%type<ast> printValue
+%type<ast> expression
+%type<ast> argList
+%type<ast> argRemainder
+%type<ast> argument
 
 
 %right '='
@@ -79,25 +76,19 @@
 %left '.' 'v'
 
 %%
-program:		declarationList 			{$$ = $1; ast = $$; astPrint($$, 0);}
+program:		declarationList 			{$$ = $1; ast = $$; astPrint($$, 0);checkAndSetTypes($1); checkUndeclared();checkOperands($1);}
 	;
 
 declarationList:	declaration declarationList		{$$ = astCreate(AST_DECLARATIONLIST, 0, $1, $2, 0, 0);}
 	|							{$$ = 0;}
 	;
 
-declaration:		variableDeclaration 			{$$ = astCreate(AST_DECLARATION, 0, $1, 0, 0, 0);}
-	|		functionDeclaration			{$$ = astCreate(AST_DECLARATION, 0, $1, 0, 0, 0);}
-	|		vectorDeclaration			{$$ = astCreate(AST_DECLARATION, 0, $1, 0, 0, 0);}
+declaration:		variableType TK_IDENTIFIER	'=' variableValue ';'		{$$ = astCreate(AST_VARIABLEDECLARATION, $2, $1, $4, 0, 0);}
+	|		variableType TK_IDENTIFIER '[' vectorSize ']' vectorValue ';' 	{$$ = astCreate(AST_VECTORDECLARATION, $2, $1, $4, $6, 0);}
+	|		variableType TK_IDENTIFIER '(' paramList ')' commandBlock {$$ = astCreate(AST_FUNCTIONDECLARATION, $2, $1, $4, $6, 0);}
         ;
 
 //		VARIABLE DECLARATION
-variableDeclaration: 	variableType TK_IDENTIFIER	'=' variableValue ';'		{$$ = astCreate(AST_VARIABLEDECLARATION, $2, $1, $4, 0, 0);}
-        ;
-
-vectorDeclaration:	variableType TK_IDENTIFIER '[' vectorSize ']' vectorValue ';' 	{$$ = astCreate(AST_VECTORDECLARATION, $2, $1, $4, $6, 0);}
-	;
-
 vectorSize:		LIT_INTEGER 				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
@@ -124,9 +115,6 @@ variableValue:		LIT_INTEGER 				{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 //		FUNCTION DECLARATION
-functionDeclaration: 	variableType TK_IDENTIFIER '(' paramList ')' commandBlock {$$ = astCreate(AST_FUNCTIONDECLARATION, $2, $1, $4, $6, 0);}
-        ;
-
 paramList:		param remainder				{$$ = astCreate(AST_PARAMLIST, 0, $1, $2, 0, 0);}
 	|							{$$=0;}
 	;
@@ -173,7 +161,8 @@ printValue:		expression printValue							{$$ = astCreate(AST_PRINTVALUE, 0, $1, 
 	;
 
 //		EXPRESSIONS
-expression:		argument								{$$ = $1;}					
+expression:		argument								{$$ = $1;}		
+	|		LIT_STRING						  		{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	|		TK_IDENTIFIER  '(' argList ')'						{$$ = astCreate(AST_FUNCTIONCALL, $1, $3, 0, 0, 0);}
 	|		TK_IDENTIFIER  '[' expression ']'					{$$ = astCreate(AST_VECTORPOS, $1, $3, 0, 0, 0);}
 	|		'(' expression ')'							{$$ = astCreate(AST_PARENTHESIS, 0, $2, 0, 0, 0);}
@@ -202,7 +191,6 @@ argRemainder:		',' argument argRemainder						{$$ = astCreate(AST_ARGREMAINDER, 
 
 argument:		TK_IDENTIFIER								{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	|		variableValue								{$$ = $1;}
-	|		LIT_STRING								{$$ = astCreate(AST_SYMBOL, $1, 0, 0, 0, 0);}
 	;
 
 %%
