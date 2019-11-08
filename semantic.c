@@ -255,9 +255,11 @@ void checkOperands(AST* node) {
             break;
         case AST_VECTORDECLARATION:
             if(isBool(node->son[SON_LEFT])) { // index==bool
+                fprintf(stderr, "Semantic ERROR: Index cannot be boolean. \n");
                 errorsSemantic++;
             }
             if(node->symbol->type != SYMBOL_VECTOR) {
+                fprintf(stderr, "Semantic ERROR: Type %d should be vector. \n", node->symbol->type);
                 errorsSemantic++;
             }
 		AST* auxnode = node->son[2];
