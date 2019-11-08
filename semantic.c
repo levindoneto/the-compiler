@@ -4,11 +4,11 @@ int errorsSemantic = INIT;
 
 AST* rootNode = 0;
 
-void checkUndeclared(void){
+void checkUndeclared(void) {
     errorsSemantic += hashGetNumberUndeclared();
 }
 
-int getSemanticErrors(void){
+int `getNumberErrorSemantic(void) {
     return errorsSemantic;
 }
 
