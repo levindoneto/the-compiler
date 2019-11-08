@@ -2,7 +2,7 @@
 int a = 4;
 bool x = FALSE;
 bool y = FALSE;
-nt vetor[2]: 1 2;
+int vetor[2]: 1 2;
 int main() {
 	a = 1;
 	y = TRUE;
