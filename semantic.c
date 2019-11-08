@@ -224,6 +224,7 @@ void checkOperands(AST* node) {
         case AST_MUL:
             for(exp = INIT; exp < MAX_COMPARE; exp++){
                 if(isBool(node->son[exp])){
+fprintf(stderr, "AST_MUL");
                     errorsSemantic++;
                 }
             }
@@ -237,18 +238,21 @@ void checkOperands(AST* node) {
             break;
         case AST_VARIABLEDECLARATION :
             if((node->symbol->type == SYMBOL_FUNCTION|| node->symbol->type == SYMBOL_VECTOR)) {
-                errorsSemantic++;
+             fprintf(stderr, "AST_VARIABLEDECLARATION");   
+errorsSemantic++;
             }
             if (isBool(node->son[SON_LEFT])) {
                 if(node->symbol->datatype==DATATYPE_INT ||
                    node->symbol->datatype==DATATYPE_FLOAT ||
                    node->symbol->datatype==DATATYPE_LONG ||
                    node->symbol->datatype==DATATYPE_BYTE) {
+fprintf(stderr, "AST_VARIABLEDECLARATION2");
                        errorsSemantic++;
                 }
             }
             if (isNotBool(node->son[SON_LEFT])){
                 if(node->symbol->datatype ==DATATYPE_BOOL) {
+fprintf(stderr, "AST_VARIABLEDECLARATION3");
                     errorsSemantic++;
                 }
             }
