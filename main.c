@@ -78,6 +78,8 @@ int main(int argc, char ** argv) {
 	if (getNumberErrorSemantic() > 0) {
 		fprintf(stderr, "%d semantic error(s) has(ve) been found\n", getNumberErrorSemantic());
 		exit(4);
+	} else {
+		fprintf(stderr, "No semantic errors have been found\n");
 	}
 	exit(0); // no found errors (sintatic and semantic)
 	return 0;
