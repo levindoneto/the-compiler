@@ -85,3 +85,10 @@ void hashPrint(void){
         }
     }
 }
+
+HASHTABLE_NODE* makeLabel() {
+    static char name[MAX_NAME];
+    static int serial = INIT_VALUE;
+    sprintf(name, "Label%d", serial++);
+    return hashInsert(SYMBOL_LABEL, name);
+}

@@ -52,16 +52,16 @@
 typedef struct tac_struct{
   int type;
   int numOfArgs;
-  HASH_NODE *res;
-  HASH_NODE *op1;
-  HASH_NODE *op2;
+  HASHTABLE_NODE *res;
+  HASHTABLE_NODE *op1;
+  HASHTABLE_NODE *op2;
   int num;
   struct tac_struct *prev;
   struct tac_struct *next;
 }TAC;
 
-TAC* tacGenerate(AST *node,HASH_NODE *jmpLeap);
-TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2, int num);
+TAC* tacGenerate(AST *node,HASHTABLE_NODE *jmpLeap);
+TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num);
 void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);
 TAC* tacJoin(TAC *t1, TAC *t2);

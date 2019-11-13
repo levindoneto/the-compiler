@@ -5,15 +5,15 @@
 
 TAC* functionDec(AST *node, TAC *params, TAC *block)
 {
-  HASH_NODE *fBegin = makeLabel();
-  HASH_NODE *fEnd = makeLabel();
-  TAC *funBegin = tacCreate(TAC_BEGINFUN, node->symbol, fBegin , 0, (int)node->value);
+  HASHTABLE_NODE *fBegin = makeLabel();
+  HASHTABLE_NODE *fEnd = makeLabel();
+  TAC *funBegin = tacCreate(TAC_BEGINFUN, node->symbol, fBegin , 0, (int)node->type);
   TAC *funEnd = tacCreate(TAC_ENDFUN, node->symbol, fEnd,0, 0);
   return tacJoin(tacJoin( tacJoin(funBegin,params), block), funEnd);
 }
 
 
-TAC* tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2, int num)
+TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num)
 {
   TAC *newTac;
   newTac = (TAC*)calloc(1, sizeof(TAC));
@@ -72,11 +72,11 @@ void tacPrintForward(TAC *tac)
 
 TAC* makeCall(AST* node, TAC* listParam)
 {
-  HASH_NODE* labelBegin = makeLabel();
-  HASH_NODE* labelEnd = makeLabel();
+  HASHTABLE_NODE* labelBegin = makeLabel();
+  HASHTABLE_NODE* labelEnd = makeLabel();
   TAC* callEnd = tacCreate(TAC_CALL_END, node->symbol, labelEnd, 0, 0);
 
-  int numParams = (int)node->value;
+  int numParams = (int)node->type;
   TAC *aux = listParam;
   TAC *p  = aux;
   int done = 0;
@@ -97,7 +97,7 @@ TAC* makeCall(AST* node, TAC* listParam)
       aux = aux->prev;
     }   
   }
-  return tacJoin(tacJoin(tacCreate(TAC_CALL_BEGIN, node->symbol, labelBegin,0,(int)node->value), p), callEnd);
+  return tacJoin(tacJoin(tacCreate(TAC_CALL_BEGIN, node->symbol, labelBegin,0,(int)node->type), p), callEnd);
 }
 
 
@@ -113,7 +113,7 @@ TAC* makeIf(TAC *result0, TAC *result1)
 {
   TAC *newIfTac = 0;
   TAC *newLabelTac = 0;
-  HASH_NODE *newLabel = 0;
+  HASHTABLE_NODE *newLabel = 0;
   newLabel = makeLabel();
   newIfTac = tacCreate(TAC_IFZ, result0?result0->res:0, newLabel , 0,0);
   newLabelTac = tacCreate(TAC_LABEL, newLabel, 0, 0,0);
@@ -123,8 +123,8 @@ TAC* makeIf(TAC *result0, TAC *result1)
 
 TAC *makeIfElse(TAC *expr, TAC *cmdIf, TAC *cmdElse)
 {
-  HASH_NODE *labelElse = makeLabel();
-  HASH_NODE *labelContinue = makeLabel();
+  HASHTABLE_NODE *labelElse = makeLabel();
+  HASHTABLE_NODE *labelContinue = makeLabel();
   TAC *newIfElseTac = 0;
   TAC *lbContinue = 0;
   TAC *lbElse = 0;

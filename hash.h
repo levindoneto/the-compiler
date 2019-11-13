@@ -7,6 +7,7 @@
 
 #define NODE_NOT_FOUND -1 // when the node is not found withing the hashtable
 #define INIT_VALUE 0
+#define MAX_NAME 100 // label
 #define INIT_ADDRESS 1
 #define DEFAULT_N_OBJECTS 1 // default number of objects to alloc memory
 #define TEXT_SIZE 128
@@ -23,6 +24,7 @@
 #define SYMBOL_LITSTRING 9
 #define SYMBOL_LITBYTE 10
 #define SYMBOL_FUNCTIONPAR 11
+#define SYMBOL_LABEL 12 // TAC
 
 #define DATATYPE_INT 1
 #define DATATYPE_LONG 2
@@ -82,5 +84,11 @@ int hashGetNumberUndeclared(void);
  * @return:     {void}.
  */
 void hashPrint(void);
+
+/* unction for making labels for being used by TACs.
+ * @parameter:  {void}.
+ * @return:     {HASHTABLE_NODE} node of the hash table.
+ */
+HASHTABLE_NODE* makeLabel();
 
 #endif
