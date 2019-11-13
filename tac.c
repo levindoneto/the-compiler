@@ -95,7 +95,7 @@ TAC* makeCall(AST* node, TAC* listParam)
     {
       p = tacJoin(p,tacCreate(TAC_CALL_PARAM, aux->res?aux->res : 0, 0, 0, numParams - i));
       aux = aux->prev;
-    }   
+    }
   }
   return tacJoin(tacJoin(tacCreate(TAC_CALL_BEGIN, node->symbol, labelBegin,0,(int)node->type), p), callEnd);
 }
@@ -136,3 +136,23 @@ TAC *makeIfElse(TAC *expr, TAC *cmdIf, TAC *cmdElse)
   return tacJoin(tacJoin( tacJoin(tacJoin(tacJoin(tacJoin(expr, newIfElseTac), cmdIf), jmp), lbElse), cmdElse ),lbContinue);
 }
 
+
+// TODO
+void tacPrintSingle(TAC* tac)
+{
+    if(!tac) return;
+
+    if(tac->type == TAC_SYMBOL) return;
+
+    fprintf(stderr, "TAC (");
+    switch(tac->type)
+    {
+        case TAC_ADD: fprintf(stderr, "TAC_ADD");
+            break;
+
+        case TAC_SUB: fprintf(stderr, "TAC_SUB");
+            break;
+        default: fprintf(stderr, "TAC_UNKNOWN");
+            break;
+    }
+}

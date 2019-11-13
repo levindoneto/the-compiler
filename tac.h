@@ -72,4 +72,3 @@ TAC* makeCall(AST* node, TAC* listParam);
 TAC *makeBinaryOperation(int op, TAC *result0, TAC *result1);
 TAC* makeIf(TAC *result0, TAC *result1);
 TAC *makeIfElse(TAC *expr, TAC *cmdIf, TAC *cmdElse);
-
