@@ -29,4 +29,4 @@ tac.c: tac.c
 	gcc -c tac.c
 
 clean:
-	rm *.o etapa4 lex.yy.c y.tab.c
+	rm *.o etapa5 lex.yy.c y.tab.c

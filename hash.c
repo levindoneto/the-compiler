@@ -92,3 +92,10 @@ HASHTABLE_NODE* makeLabel() {
     sprintf(name, "Label%d", serial++);
     return hashInsert(SYMBOL_LABEL, name);
 }
+
+HASHTABLE_NODE* makeTemp() {
+    static char name[MAX_NAME];
+    static int serial = INIT_VALUE;
+    sprintf(name, "Temp%d", serial++);
+    return hashInsert(SYMBOL_SCALAR, name);
+}
