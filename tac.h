@@ -49,7 +49,7 @@
 #define TAC_VEC_ATTR_INIT 43
 #define TAC_VEC_ATTR_END 44
 
-typedef struct tac_struct{
+typedef struct tac_struct {
   int type;
   int numOfArgs;
   HASHTABLE_NODE *res;
@@ -58,10 +58,11 @@ typedef struct tac_struct{
   int num;
   struct tac_struct *prev;
   struct tac_struct *next;
-}TAC;
+  AST *node;
+} TAC;
 
 TAC* tacGenerate(AST *node,HASHTABLE_NODE *jmpLeap);
-TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num);
+TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num, AST *node);
 void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);
 TAC* tacJoin(TAC *t1, TAC *t2);

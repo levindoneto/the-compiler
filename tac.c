@@ -13,7 +13,7 @@ TAC* functionDec(AST *node, TAC *params, TAC *block)
 }
 
 
-TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num)
+TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num, AST *node)
 {
   TAC *newTac;
   newTac = (TAC*)calloc(1, sizeof(TAC));
@@ -24,6 +24,7 @@ TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NOD
   newTac->op2 = op2;
   newTac->prev = 0;
   newTac->next = 0;
+  newTac->node = node;
   return newTac;
 }
 
