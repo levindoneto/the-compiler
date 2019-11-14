@@ -15,10 +15,6 @@ jobs:
       run: make
     - name: test1
       run: |
-
-        ./etapa4 tests/stage4/in1.txt out.txt
-
-
-
+        ./etapa5 tests/stage5/input.txt out.txt
         echo ">> OUTPUT <<"
         cat out.txt
