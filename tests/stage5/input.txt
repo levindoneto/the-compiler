@@ -1,0 +1,14 @@
+int a = 0;
+int b = 1;
+int c = 12;
+int vec[3]: 0 0 0;
+
+int main(){
+    a = 32;
+    b = 16;
+    c = a + b;
+    vec[1] = c;
+    if ((a >= b) v (vec[0] != a)) then {read b};
+    if (b == a) then {print a} else {while(a > b) { break } };
+    return 1;
+}
