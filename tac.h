@@ -18,6 +18,7 @@
 #define TAC_LE 14
 #define TAC_GE 15
 #define TAC_EQ 16
+#define TAC_DIFF 45
 #define TAC_ARRAY 17
 #define TAC_STRING 19
 #define TAC_READ 20
@@ -27,7 +28,7 @@
 #define TAC_RET 23
 #define TAC_PARAM 24
 
-#define TAC_LEAP 25
+#define TAC_BREAK 25
 #define TAC_JUMP 26
 #define TAC_SYMBOL_VEC 27
 #define TAC_IFZ_ELSE 28
@@ -38,8 +39,8 @@
 #define TAC_PRINT_PARAM 33
 #define TAC_FUNC_PARAM 34
 #define TAC_CALL_PARAM 35
-#define TAC_LOOP 36
-#define TAC_LABEL_LEAP 37
+#define TAC_WHILE 36
+#define TAC_FOR 37
 
 #define TAC_DEC_VAR 38
 #define TAC_DEC_VEC 39
@@ -61,7 +62,7 @@ typedef struct tac_struct {
   AST *node;
 } TAC;
 
-TAC* tacGenerate(AST *node,HASHTABLE_NODE *jmpLeap);
+TAC* tacGenerate(AST *node,HASHTABLE_NODE *jmpLoop);
 TAC* tacCreate(int type, HASHTABLE_NODE *res, HASHTABLE_NODE *op1, HASHTABLE_NODE *op2, int num, AST *node);
 void tacPrintSingle(TAC *tac);
 void tacPrintBackwards(TAC *tac);
@@ -74,3 +75,5 @@ TAC *makeBinaryOperation(int op, TAC *result0, TAC *result1, AST* node);
 TAC* makeIf(TAC *result0, TAC *result1, AST* node);
 TAC *makeIfElse(TAC *expr, TAC *cmdIf, TAC *cmdElse, AST* node);
 TAC* makeWhile(TAC *expr, TAC *cmd, HASHTABLE_NODE *jmpLeapLoop, AST* node);
+TAC* makeFor(TAC *expr, TAC *expr1, TAC *expr2, TAC *cmd, HASHTABLE_NODE *jmpLeapLoop, AST* node);
+TAC* tacReverse(TAC *tac);

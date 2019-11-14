@@ -2,12 +2,183 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+TAC* tacGenerate(AST *node, HASHTABLE_NODE *jmpLoop) {
+	int i;
+	TAC *result[MAX_SONS];
+	if (!node) {
+		return 0;
+	}
+	
+	if(node->type == AST_WHILE || node->type == AST_FOR) {
+		jmpLoop = makeLabel();
+	}
+
+	for (i = 0; i < MAX_SONS; i++) {
+		result[i] = tacGenerate(node->son[i],jmpLoop);
+	}
+
+	switch (node->type) {
+		case AST_DECLARATIONLIST:
+			return tacJoin(result[0], result[1]);
+		break;
+		
+		case AST_VARIABLEDECLARATION:
+			return tacJoin(tacCreate(TAC_ATTR, node->symbol, result[1]?result[1]->res:0, 0, 0, node),tacJoin(tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0, node), result[1]));
+		break;
+		
+		case AST_VECTORDECLARATION:
+			if (node->son[2]) {
+				return tacJoin(tacJoin(tacJoin(tacCreate(TAC_VEC_ATTR_INIT, node->symbol, 0, 0, 0, node), result[1]), result[2]), tacCreate(TAC_VEC_ATTR_END, 0, 0, 0, 0, node));
+			} else {
+				return tacCreate(TAC_SYMBOL_VEC, node->symbol, result[1]?result[1]->res : 0 , 0, 0, node);
+			}
+		break;
+		
+		case AST_FUNCTIONDECLARATION:
+			return functionDec(node, result[1], result[2]);
+		break;
+		
+		case AST_PARAMLIST:
+		case AST_REMAINDER:
+		case AST_VECTORVALUE:
+		case AST_VECTORREMAINDER:
+		case AST_COMMANDBLOCK:
+		case AST_COMMANDREMAINDER:
+		case AST_ARGLIST:
+		case AST_ARGREMAINDER:
+			return tacJoin(result[0], result[1]);
+		break;
+		
+		case AST_PARAM:
+			return tacCreate(TAC_PARAM, node->symbol, 0, 0, 0, node);
+		break;
+		
+		case AST_ATTR:
+			return tacJoin(result[0],tacCreate(TAC_ATTR, node->symbol, result[0]?result[0]->res : 0, 0, 0, node));
+		break;
+		
+		case AST_VECTORATTR:
+			return tacJoin(tacJoin(result[0], result[1]), tacCreate(TAC_VEC_ATTR, node->symbol, result[1]?result[1]->res:0, result[0]?result[0]->res:0, 0, node));
+		break;
+				
+		case AST_READ:
+			return tacCreate(TAC_READ, node->symbol, 0, 0, 0, node);
+		break;
+		
+		case AST_PRINT:
+			return tacJoin(tacCreate(TAC_PRINT, 0, 0, 0, 0, node), result[0]);
+		break;
+		
+		case AST_PRINTVALUE:
+			return tacJoin(tacCreate(TAC_PRINT_PARAM, result[0]?result[0]->res:0, 0, 0, 0, node),result[1]);
+		break;
+		
+		case AST_PRINTFINAL:
+			return tacCreate(TAC_PRINT_PARAM, result[0]?result[0]->res:0, 0, 0, 0, node);
+		break;
+		
+		case AST_RETURN:
+			return tacJoin(result[0], tacCreate(TAC_RET, result[0]?result[0]->res:0, 0, 0, 0, node) );
+		break;
+		
+		case AST_FLUXCONTROL:
+		case AST_PARENTHESIS:
+			return result[0];
+		break;
+		
+		case AST_IFTHEN:
+			return makeIf(result[0], result[1], node);
+		break;
+		
+		case AST_IFTHENELSE:
+			return makeIfElse(result[0], result[1], result[2], node);
+		break;
+		
+		case AST_WHILE:
+			return makeWhile(result[0], result[1], jmpLoop, node);
+		break;
+		
+		case AST_FOR:
+			return makeFor(result[0], result[1], result[2], result[3], jmpLoop, node);
+		break;
+		
+		case AST_BREAK:
+			return tacCreate(TAC_BREAK, 0, 0, 0, 0, node);
+		break;
+		
+		case AST_FUNCTIONCALL:
+			return makeCall(node, result[0]);
+		break;
+		
+		case AST_VECTORPOS:
+			return tacJoin(result[0], tacCreate(TAC_ARRAY, makeTemp(), node->symbol, result[0]?result[0]->res : 0, 0, node));
+		break;
+		
+		case AST_SYMBOL:
+			return tacCreate(TAC_SYMBOL, node->symbol, 0, 0, 0, node);
+		break;
+		
+		case AST_ADD:
+			return makeBinaryOperation(TAC_ADD, result[0], result[1], node);
+		break;
+		
+		case AST_SUB:
+			return makeBinaryOperation(TAC_SUB, result[0], result[1], node);
+		break;
+		
+		case AST_MUL:
+			return makeBinaryOperation(TAC_MULT, result[0], result[1], node);
+		break;
+		
+		case AST_DIV:
+			return makeBinaryOperation(TAC_DIV, result[0], result[1], node);
+		break;
+		
+		case AST_LESS:
+			return makeBinaryOperation(TAC_LESS, result[1], result[0], node);
+		break;
+		
+		case AST_GREATER:
+			return makeBinaryOperation(TAC_GREATER, result[0], result[1], node);
+		break;
+		
+		case AST_AND:
+			return makeBinaryOperation(TAC_AND, result[0], result[1], node);
+		break;
+		
+		case AST_OR:
+			return makeBinaryOperation(TAC_OR, result[0], result[1], node);
+		break;
+		
+		case AST_NOT:
+			return makeBinaryOperation(TAC_NOT, result[0], result[1], node);
+		break;
+		
+		case AST_LE:
+			return makeBinaryOperation(TAC_LE, result[0], result[1], node);
+		break;
+		
+		case AST_GE:
+			return makeBinaryOperation(TAC_GE, result[0], result[1], node);
+		break;
+		
+		case AST_EQ:
+			return makeBinaryOperation(TAC_EQ, result[0], result[1], node);
+		break;
+		
+		case AST_DIFF:
+			return makeBinaryOperation(TAC_DIFF, result[0], result[1], node);
+		break;
+		
+	}
+	return 0;
+}
 
 TAC* functionDec(AST *node, TAC *params, TAC *block)
 {
   HASHTABLE_NODE *fBegin = makeLabel();
   HASHTABLE_NODE *fEnd = makeLabel();
-  TAC *funBegin = tacCreate(TAC_BEGINFUN, node->symbol, fBegin , 0, (int)node->type, node);
+  TAC *funBegin = tacCreate(TAC_BEGINFUN, node->symbol, fBegin , 0, 0, node);
   TAC *funEnd = tacCreate(TAC_ENDFUN, node->symbol, fEnd,0, 0, node);
   return tacJoin(tacJoin( tacJoin(funBegin,params), block), funEnd);
 }
@@ -209,8 +380,8 @@ void tacPrintSingle(TAC* tac)
         case TAC_PARAM:
             fprintf(stderr, "TAC_PARAM");
         break;
-        case TAC_LEAP:
-            fprintf(stderr, "TAC_LEAP");
+        case TAC_BREAK:
+            fprintf(stderr, "TAC_BREAK");
         break;
         case TAC_JUMP:
             fprintf(stderr, "TAC_JUMP");
@@ -242,11 +413,11 @@ void tacPrintSingle(TAC* tac)
         case TAC_CALL_PARAM:
             fprintf(stderr, "TAC_CALL_PARAM");
         break;
-        case TAC_LOOP:
-            fprintf(stderr, "TAC_LOOP");
+        case TAC_WHILE:
+            fprintf(stderr, "TAC_WHILE");
         break;
-        case TAC_LABEL_LEAP:
-            fprintf(stderr, "TAC_LABEL_LEAP");
+        case TAC_FOR:
+            fprintf(stderr, "TAC_FOR");
         break;
         case TAC_DEC_VAR:
             fprintf(stderr, "TAC_DEC_VAR");
@@ -290,10 +461,10 @@ void tacPrintSingle(TAC* tac)
     fprintf(stderr, ")\n");
 }
 
-TAC* makeWhile(TAC *expr, TAC *cmd, HASHTABLE_NODE *jmpLeapLoop, AST* node)
+TAC* makeWhile(TAC *expr, TAC *cmd, HASHTABLE_NODE *jmpLoop, AST* node)
 {
 	HASHTABLE_NODE *jmpFalse = makeLabel();
-	HASHTABLE_NODE *jmpBegin = jmpLeapLoop;
+	HASHTABLE_NODE *jmpBegin = jmpLoop;
 	TAC *newLoopTac = 0;
 	TAC *labelFalse = 0;
 	TAC *labelBegin = 0;
@@ -304,3 +475,33 @@ TAC* makeWhile(TAC *expr, TAC *cmd, HASHTABLE_NODE *jmpLeapLoop, AST* node)
 	jump = tacCreate(TAC_JUMP, jmpBegin, 0, 0,0, node);
 	return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labelBegin, expr), newLoopTac), cmd), jump), labelFalse);
 }
+
+
+TAC* makeFor(TAC *expr, TAC *expr1, TAC *expr2, TAC *cmd, HASHTABLE_NODE *jmpLoop, AST* node){
+	HASHTABLE_NODE *jmpFalse = makeLabel();
+	HASHTABLE_NODE *jmpBegin = jmpLoop;
+	TAC *newLoopTac = 0;
+	TAC *labelFalse = 0;
+	TAC *labelBegin = 0;
+	TAC *jump = 0;
+	newLoopTac = tacCreate(TAC_IFZ, jmpFalse, expr?expr->res:0, 0,0, node);
+	labelFalse = tacCreate(TAC_LABEL, jmpFalse, 0, 0,0, node);
+	labelBegin = tacCreate(TAC_LABEL, jmpBegin, 0, 0,0, node);
+	jump = tacCreate(TAC_JUMP, jmpBegin, 0, 0,0, node);
+	return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labelBegin, expr), newLoopTac), cmd), jump), labelFalse);
+}
+
+
+TAC* tacReverse(TAC *tac)
+{
+  if(!tac)
+  {
+    return 0;
+  }
+  for(; tac->prev; tac = tac->prev)
+  {
+    tac->prev->next = tac;
+  }
+  return tac;
+}
+
