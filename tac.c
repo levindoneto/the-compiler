@@ -289,3 +289,18 @@ void tacPrintSingle(TAC* tac)
     }
     fprintf(stderr, ")\n");
 }
+
+TAC* makeWhile(TAC *expr, TAC *cmd, HASHTABLE_NODE *jmpLeapLoop, AST* node)
+{
+	HASHTABLE_NODE *jmpFalse = makeLabel();
+	HASHTABLE_NODE *jmpBegin = jmpLeapLoop;
+	TAC *newLoopTac = 0;
+	TAC *labelFalse = 0;
+	TAC *labelBegin = 0;
+	TAC *jump = 0;
+	newLoopTac = tacCreate(TAC_IFZ, jmpFalse, expr?expr->res:0, 0,0, node);
+	labelFalse = tacCreate(TAC_LABEL, jmpFalse, 0, 0,0, node);
+	labelBegin = tacCreate(TAC_LABEL, jmpBegin, 0, 0,0, node);
+	jump = tacCreate(TAC_JUMP, jmpBegin, 0, 0,0, node);
+	return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labelBegin, expr), newLoopTac), cmd), jump), labelFalse);
+}

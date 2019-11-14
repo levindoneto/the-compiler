@@ -73,3 +73,4 @@ TAC* makeCall(AST* node, TAC* listParam);
 TAC *makeBinaryOperation(int op, TAC *result0, TAC *result1, AST* node);
 TAC* makeIf(TAC *result0, TAC *result1, AST* node);
 TAC *makeIfElse(TAC *expr, TAC *cmdIf, TAC *cmdElse, AST* node);
+TAC* makeWhile(TAC *expr, TAC *cmd, HASHTABLE_NODE *jmpLeapLoop, AST* node);
