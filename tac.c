@@ -138,13 +138,10 @@ TAC *makeIfElse(TAC *expr, TAC *cmdIf, TAC *cmdElse)
 
 void tacPrintSingle(TAC* tac)
 {
-    if(!tac) return;
-
-    if(tac->type == TAC_SYMBOL) return;
-
+    if(!tac || tac->type == TAC_SYMBOL) {
+	return;
+    }
     fprintf(stderr, "TAC (");
-    switch(tac->type)
-    {
     switch(tac->type) {
         case TAC_ADD:
             fprintf(stderr, "TAC_ADD");
@@ -275,4 +272,20 @@ void tacPrintSingle(TAC* tac)
         default:
             fprintf(stderr, "TAC_UNKNOWN");
     }
+    if(tac->res) {
+        fprintf(stderr, ", %s", tac->res->value);
+    } else  {
+        fprintf(stderr, ", 0");
+    }
+    if(tac->op1) {
+        fprintf(stderr, ", %s", tac->op1->value);
+    } else {
+        fprintf(stderr, ", 0");
+    }
+    if(tac->op2) {
+        fprintf(stderr, ", %s", tac->op2->value);
+    } else {
+        fprintf(stderr, ", 0");
+    }
+    fprintf(stderr, ")\n");
 }
