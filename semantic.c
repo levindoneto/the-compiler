@@ -1,17 +1,10 @@
 #include "semantic.h"
-
-int errorsSemantic = INIT;
-
-AST* rootNode = 0;
-
-void checkUndeclared(void) {
+int errorsSemantic = INIT; AST* rootNode = 0; void checkUndeclared(void) {
     errorsSemantic += hashGetNumberUndeclared();
 }
-
 int getNumberErrorSemantic(void) {
     return errorsSemantic;
 }
-
 void checkAndSetTypes(AST*node) {
     int exp;
     if (!node) {
@@ -20,16 +13,15 @@ void checkAndSetTypes(AST*node) {
     if (!rootNode){
 	rootNode = node;
     }
-    if(	node->type == AST_DECLARATION 		||
-	node->type == AST_VARIABLEDECLARATION 	||
-	node->type == AST_FUNCTIONDECLARATION 	||
-	node->type == AST_VECTORDECLARATION 	||
-	node->type == AST_PARAM			) {
+    if( node->type == AST_DECLARATION ||
+	node->type == AST_VARIABLEDECLARATION ||
+	node->type == AST_FUNCTIONDECLARATION ||
+	node->type == AST_VECTORDECLARATION ||
+	node->type == AST_PARAM ) {
         if(node->symbol && node->symbol->type != SYMBOL_IDENTIFIER && node->type!= AST_PARAM) {
             fprintf(stderr, "Semantic ERROR: Symbol %s already declared. \n", node->symbol->value);
             errorsSemantic++;
         }
-
 	//declare symbol type and datatype
 	switch (node->type) {
 		case AST_VARIABLEDECLARATION:
@@ -45,7 +37,6 @@ void checkAndSetTypes(AST*node) {
         		node->symbol->type = SYMBOL_SCALAR;
 		break;
 	}
-
 	switch(node->son[SON_LEFT]->type) {
 		case AST_BOOL:
                 	node->symbol->datatype = DATATYPE_BOOL;
@@ -68,15 +59,12 @@ void checkAndSetTypes(AST*node) {
         checkAndSetTypes(node->son[exp]);
     }
 }
-
-
 void checkOperands(AST* node) {
     if (!node) {
 	return;
     }
     int type;
     int exp; // expression iterator
-
     switch(node->type) {
 	// Item 1 - Declarações
 	case AST_SYMBOL:
@@ -306,144 +294,113 @@ void checkOperands(AST* node) {
         checkOperands(node->son[exp]);
     }
 }
-
 int isBool(AST* node){
 	if (!node) return 0;
-
 	if (node->type == AST_PARENTHESIS) return isBool(node->son[SON_LEFT]);
-
-	if (	node->type == AST_LESS							||
-		node->type == AST_GREATER						||
-		node->type == AST_AND							||
-		node->type == AST_OR							||
-		node->type == AST_NOT							||
-		node->type == AST_LE							||
-		node->type == AST_GE							||
-		node->type == AST_EQ							||
-		node->type == AST_DIFF							||
-		node->type == AST_NOT							||
-
-		(node->type 		== AST_SYMBOL 				&&
-		 (node->symbol->type 		==	SYMBOL_SCALAR	||
-		  node->symbol->type 		==	SYMBOL_VECTOR	||
-		  node->symbol->type 		==	SYMBOL_FUNCTION)	&&
-		 node->symbol->datatype == DATATYPE_BOOL)				||
-
-		(node->type 		== AST_SYMBOL 				&&
-		 node->symbol->type 	== SYMBOL_LITBOOL)				||
-
-		(node->type 		== AST_VECTORPOS			&&
-		 node->symbol->type 	== SYMBOL_VECTOR			&&
-		 node->symbol->datatype == DATATYPE_BOOL)				||
-
-		(node->type		== AST_FUNCTIONCALL			&&
-		 node->symbol->type 	== SYMBOL_FUNCTION			&&
+	if ( node->type == AST_LESS ||
+		node->type == AST_GREATER ||
+		node->type == AST_AND ||
+		node->type == AST_OR ||
+		node->type == AST_NOT ||
+		node->type == AST_LE ||
+		node->type == AST_GE ||
+		node->type == AST_EQ ||
+		node->type == AST_DIFF ||
+		node->type == AST_NOT ||
+		(node->type == AST_SYMBOL &&
+		 (node->symbol->type == SYMBOL_SCALAR ||
+		  node->symbol->type == SYMBOL_VECTOR ||
+		  node->symbol->type == SYMBOL_FUNCTION) &&
+		 node->symbol->datatype == DATATYPE_BOOL) ||
+		(node->type == AST_SYMBOL &&
+		 node->symbol->type == SYMBOL_LITBOOL) ||
+		(node->type == AST_VECTORPOS &&
+		 node->symbol->type == SYMBOL_VECTOR &&
+		 node->symbol->datatype == DATATYPE_BOOL) ||
+		(node->type == AST_FUNCTIONCALL &&
+		 node->symbol->type == SYMBOL_FUNCTION &&
 		 node->symbol->datatype == DATATYPE_BOOL)
 		) return 1;
-
 	return 0;
 }
-
 int isNotBool(AST* node){
 	if (!node) return 0;
-
 	if (node->type == AST_PARENTHESIS) return isNotBool(node->son[SON_LEFT]);
-
-	if (	node->type == AST_ADD							||
-		node->type == AST_SUB							||
-		node->type == AST_MUL							||
-		node->type == AST_DIV							||
-
-	 	 (node->type 		== AST_SYMBOL 				&&
-		 (node->symbol->type 		==	SYMBOL_SCALAR	||
-		  node->symbol->type 		==	SYMBOL_VECTOR	||
-		  node->symbol->type 		==	SYMBOL_FUNCTION)	&&
-		  (node->symbol->datatype == DATATYPE_INT		||
-		  node->symbol->datatype == DATATYPE_FLOAT		||
-		  node->symbol->datatype == DATATYPE_BYTE		||
-		  node->symbol->datatype == DATATYPE_LONG))				||
-
-		(node->type 			== AST_SYMBOL 			&&
-		 (node->symbol->type 		== SYMBOL_LITINT	||
-		  node->symbol->type 		== SYMBOL_LITREAL))			||
-
-		(node->type 			== AST_VECTORPOS		&&
-		 node->symbol->type 		== SYMBOL_VECTOR		&&
-		 (node->symbol->datatype == DATATYPE_INT		||
-		  node->symbol->datatype == DATATYPE_FLOAT		||
-		  node->symbol->datatype == DATATYPE_BYTE		||
-		  node->symbol->datatype == DATATYPE_LONG))				||
-
-		(node->type			== AST_FUNCTIONCALL		&&
-		 node->symbol->type 		== SYMBOL_FUNCTION		&&
-		 (node->symbol->datatype == DATATYPE_INT		||
-		  node->symbol->datatype == DATATYPE_FLOAT		||
-		  node->symbol->datatype == DATATYPE_BYTE		||
+	if ( node->type == AST_ADD ||
+		node->type == AST_SUB ||
+		node->type == AST_MUL ||
+		node->type == AST_DIV ||
+	 	 (node->type == AST_SYMBOL &&
+		 (node->symbol->type == SYMBOL_SCALAR ||
+		  node->symbol->type == SYMBOL_VECTOR ||
+		  node->symbol->type == SYMBOL_FUNCTION) &&
+		  (node->symbol->datatype == DATATYPE_INT ||
+		  node->symbol->datatype == DATATYPE_FLOAT ||
+		  node->symbol->datatype == DATATYPE_BYTE ||
+		  node->symbol->datatype == DATATYPE_LONG)) ||
+		(node->type == AST_SYMBOL &&
+		 (node->symbol->type == SYMBOL_LITINT ||
+		  node->symbol->type == SYMBOL_LITREAL)) ||
+		(node->type == AST_VECTORPOS &&
+		 node->symbol->type == SYMBOL_VECTOR &&
+		 (node->symbol->datatype == DATATYPE_INT ||
+		  node->symbol->datatype == DATATYPE_FLOAT ||
+		  node->symbol->datatype == DATATYPE_BYTE ||
+		  node->symbol->datatype == DATATYPE_LONG)) ||
+		(node->type == AST_FUNCTIONCALL &&
+		 node->symbol->type == SYMBOL_FUNCTION &&
+		 (node->symbol->datatype == DATATYPE_INT ||
+		  node->symbol->datatype == DATATYPE_FLOAT ||
+		  node->symbol->datatype == DATATYPE_BYTE ||
 		  node->symbol->datatype == DATATYPE_LONG))
 		) return 1;
 	return 0;
 }
-
 int confirmType(AST* node, int datatype){
 	if (!node) return 0;
 	
 	if (datatype == DATATYPE_BOOL) return isBool(node->son[SON_LEFT]);
 	else return isNotBool(node->son[SON_LEFT]);
 }
-
 int checkReturn(AST* node, int datatype){
-	if (!node || !node->son[SON_LEFT]) return 0;
+	if (!node || !node->son[SON_LEFT]) return 1;
 	
 	if (node->son[0]->type == AST_RETURN) return confirmType(node->son[0], datatype);
 	else return checkReturn(node->son[1], datatype);
 }
-
 int verifyReturn(AST* node){
-	if (!node || !node->son[2] || !node->son[2]->son[0]){ 
-	return 0;}
-
+	if (!node || !node->son[2] || !node->son[2]->son[0]){return 1;}
 	if (node->son[2]->son[0]->type == AST_RETURN) return confirmType(node->son[2]->son[0], node->symbol->datatype);
 	else return checkReturn(node->son[2]->son[1], node->symbol->datatype);
 }
-
-
 int checkFunctionParams(AST* node){
 	AST* auxnode = rootNode;
-
 	while (auxnode) {
+		if (!auxnode || !auxnode->son[0]) return 0;
 		if (auxnode->son[0]->type == AST_FUNCTIONDECLARATION) {
 			if (strcmp(auxnode->son[0]->symbol->value, node->symbol->value) == 0){
-			 break;
+			 	break;
 			}
+			auxnode = auxnode->son[1];
 		}
 		else auxnode = auxnode->son[1];
 	}
-
+	if (!auxnode || !auxnode->son[0]) return 0;
 	auxnode = auxnode->son[0];
-
-	if (!auxnode) return 0;
-
-	if (!auxnode->son[1] && !node->son[0]) 	return 1;
-
-	if (!auxnode->son[1] || !node->son[0])  return 0;
-
-
+	if (!auxnode->son[1] && !node->son[0]) return 1;
+	if (!auxnode->son[1] || !node->son[0]) return 0;
 	auxnode = auxnode->son[1];
 	node = node->son[0];
-
 	while (auxnode->son[0] && node->son[0]){
-		if (!(	(auxnode->son[0]->son[0]->type == AST_BOOL && isBool(node->son[0])) 		|| 
+		if (!( (auxnode->son[0]->son[0]->type == AST_BOOL && isBool(node->son[0])) ||
 			(!(auxnode->son[0]->son[0]->type == AST_BOOL) && isNotBool(node->son[0]))
 		      )) return 0;
-
 	
-		if (!auxnode->son[1] && !node->son[1]) 	return 1;
-
-		if (!auxnode->son[1] || !node->son[1])  return 0;
+		if (!auxnode->son[1] && !node->son[1]) return 1;
+		if (!auxnode->son[1] || !node->son[1]) return 0;
 		auxnode = auxnode->son[1];
 		node = node->son[1];
 	}
-
 	if (!auxnode && !node) return 1;
 	return 0;
 }
