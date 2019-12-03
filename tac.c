@@ -248,7 +248,12 @@ TAC* makeCall(AST* node, TAC* listParam)
   HASHTABLE_NODE* labelEnd = makeLabel();
   TAC* callEnd = tacCreate(TAC_CALL_END, node->symbol, labelEnd, 0, 0, node);
 
-  int numParams = (int)node->type;
+  int numParams = 0;
+  TAC *count = listParam;
+  while(count){
+  	numParams++;
+	count = count->next;
+  }
   TAC *aux = listParam;
   TAC *p  = aux;
   int done = 0;
