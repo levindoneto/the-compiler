@@ -6,7 +6,7 @@ jobs:
   build:
 
     runs-on: ubuntu-16.04
-    
+
     steps:
     - uses: actions/checkout@v1
     - name: configure
@@ -15,6 +15,6 @@ jobs:
       run: make
     - name: test1
       run: |
-        ./etapa5 tests/stage5/input.txt out.txt
+        ./etapa5 tests/stage5/inbig.txt out.txt
         echo ">> OUTPUT <<"
         cat out.txt
