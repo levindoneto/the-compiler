@@ -1,6 +1,6 @@
 #include "ast.h"
 
-AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3) {
+AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3, int lineNumber) {
     AST* newNode = 0;
     newNode = (AST*) calloc(DEFAULT_N_OBJECTS, sizeof(AST)); // DEFAULT_N_OBJECTS from hash.h
     newNode->type = type;
@@ -9,6 +9,7 @@ AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2
     newNode->son[SON_ONE] = son1;
     newNode->son[SON_TWO] = son2;
     newNode->son[SON_THREE] = son3;
+    newNode->lineNumber = lineNumber;
 
     return newNode;
 }
