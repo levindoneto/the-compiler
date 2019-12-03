@@ -80,6 +80,7 @@ typedef struct ast_node {
     int type;
     HASHTABLE_NODE* symbol;
     struct ast_node *son[MAX_SONS];
+    int lineNumber;
 } AST;
 
 AST* ast; // used for making program
@@ -94,7 +95,7 @@ AST* ast; // used for making program
  * @return {AST_NODE*} tree
  *
  */
-AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3);
+AST* astCreate(int type, HASHTABLE_NODE* symbol, AST* son0, AST* son1, AST* son2, AST* son3, int lineNumber);
 
 /* Function for printing the tree.
  * @param {AST_NODE*} node.
