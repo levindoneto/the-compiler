@@ -85,17 +85,4 @@ int hashGetNumberUndeclared(void);
  */
 void hashPrint(void);
 
-/* Function for making labels for being used by TACs.
- * @parameter:  {void}.
- * @return:     {HASHTABLE_NODE} node of the hash table.
- */
-HASHTABLE_NODE* makeLabel();
-
-/* Function for making temporary labels for being used by TACs.
- * @parameter:  {void}.
- * @return:     {HASHTABLE_NODE} node of the hash table.
- */
-HASHTABLE_NODE* makeTemp();
-
-
 #endif

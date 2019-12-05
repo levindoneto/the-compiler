@@ -2,7 +2,6 @@
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include "semantic.h"
-	#include "tac.h"
 
 	int getLineNumber(void);
 	int yylex();
@@ -77,7 +76,7 @@
 %left '.' 'v'
 
 %%
-program:		declarationList 			{$$ = $1; ast = $$; astPrint($$, 0);checkAndSetTypes($1); checkUndeclared();checkOperands($1);tacPrintForward (tacReverse( tacGenerate($1,0) ));}
+program:		declarationList 			{$$ = $1; ast = $$; astPrint($$, 0);checkAndSetTypes($1); checkUndeclared();checkOperands($1);}
 	;
 
 declarationList:	declaration declarationList		{$$ = astCreate(AST_DECLARATIONLIST, 0, $1, $2, 0, 0, getLineNumber());}
