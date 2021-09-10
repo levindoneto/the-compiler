@@ -1,7 +1,7 @@
 # Break192 Compiler
 Implementation of a compiler for the language **break192**.
 
-![Building Status](http://aliyunfc.tarocch1.com/github-actions-badge/levindoneto/the-compiler)
+[![C CI - The Compiler](https://github.com/levindoneto/the-compiler/actions/workflows/ci.yml/badge.svg)](https://github.com/levindoneto/the-compiler/actions/workflows/ci.yml)
 
 **Authors:** Levindo Neto and Thiago Barp.
 
